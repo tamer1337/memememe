@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Mensuration</h1>
+  
+  <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <p class="text-lg text-gray-700 mb-4">
+      Mensuration is the branch of mathematics that studies the measurement of geometric figures 
+      and their parameters like length, volume, shape, surface area, lateral surface area etc.
+    </p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-8 mb-8">
+    <!-- 2D vs 3D Shapes -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800 border-b pb-2">Difference between 2D and 3D shapes</h2>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-blue-600">2D Shapes</h3>
+          <ul class="space-y-3 text-gray-700">
+            <li class="flex items-start">
+              <span class="font-bold mr-2">1.</span>
+              If a shape is surrounded by three or more straight lines in a plane, then it is a 2D shape
+            </li>
+            <li class="flex items-start">
+              <span class="font-bold mr-2">2.</span>
+              These shapes have no depth or height
+            </li>
+            <li class="flex items-start">
+              <span class="font-bold mr-2">3.</span>
+              These shapes have only two dimensions
+            </li>
+            <li class="flex items-start">
+              <span class="font-bold mr-2">4.</span>
+              We can measure their area and perimeter
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-semibold mb-3 text-green-600">3D Shapes</h3>
+          <ul class="space-y-3 text-gray-700">
+            <li class="flex items-start">
+              <span class="font-bold mr-2">1.</span>
+              If a shape is surrounded by surfaces or planes then it is a 3D shape
+            </li>
+            <li class="flex items-start">
+              <span class="font-bold mr-2">2.</span>
+              Unlike 2D, they have height or depth
+            </li>
+            <li class="flex items-start">
+              <span class="font-bold mr-2">3.</span>
+              These shapes have three dimensions
+            </li>
+            <li class="flex items-start">
+              <span class="font-bold mr-2">4.</span>
+              We can measure their volume, CSA, LSA or TSA
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Important Terminologies -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800 border-b pb-2">Important Terminologies</h2>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Terms</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Definition</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-4 whitespace-nowrap font-medium text-gray-900">Area (A)</td>
+              <td class="px-4 py-4 whitespace-nowrap text-gray-500">m² or cm²</td>
+              <td class="px-4 py-4 text-gray-700">Surface which is covered by the closed shape</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-4 whitespace-nowrap font-medium text-gray-900">Perimeter (P)</td>
+              <td class="px-4 py-4 whitespace-nowrap text-gray-500">m or cm</td>
+              <td class="px-4 py-4 text-gray-700">The measure of the continuous line along the boundary of the given figure</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-4 whitespace-nowrap font-medium text-gray-900">Volume (V)</td>
+              <td class="px-4 py-4 whitespace-nowrap text-gray-500">m³ or cm³</td>
+              <td class="px-4 py-4 text-gray-700">The space occupied by a 3D shape</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-4 whitespace-nowrap font-medium text-gray-900">Curved Surface Area (CSA)</td>
+              <td class="px-4 py-4 whitespace-nowrap text-gray-500">m² or cm²</td>
+              <td class="px-4 py-4 text-gray-700">If there is a curved surface, then total area is called CSA</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-4 whitespace-nowrap font-medium text-gray-900">Lateral Surface Area (LSA)</td>
+              <td class="px-4 py-4 whitespace-nowrap text-gray-500">m² or cm²</td>
+              <td class="px-4 py-4 text-gray-700">The total area of all lateral surfaces that surround the given figure</td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-4 whitespace-nowrap font-medium text-gray-900">Total Surface Area (TSA)</td>
+              <td class="px-4 py-4 whitespace-nowrap text-gray-500">m² or cm²</td>
+              <td class="px-4 py-4 text-gray-700">The sum of all curved and lateral surface areas</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<a href="{% url 'mensuration' %}" 
+   class="fixed top-12 left-12 text-black hover:text-gray-700 transition-colors">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+</a>
+
+  <!-- Visual Comparison -->
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold mb-4 text-gray-800 border-b pb-2">Visual Comparison</h2>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="border rounded-lg p-4">
+        <h3 class="text-xl font-semibold mb-3 text-blue-600 text-center">2D Shapes</h3>
+        <div class="flex justify-center space-x-6">
+          <div class="text-center">
+            <div class="w-24 h-24 border-2 border-blue-400 mx-auto mb-2 flex items-center justify-center">Square</div>
+            <p class="text-sm text-gray-600">Square</p>
+          </div>
+          <div class="text-center">
+            <div class="w-24 h-24 rounded-full border-2 border-blue-400 mx-auto mb-2 flex items-center justify-center">Circle</div>
+            <p class="text-sm text-gray-600">Circle</p>
+          </div>
+        </div>
+      </div>
+      <div class="border rounded-lg p-4">
+        <h3 class="text-xl font-semibold mb-3 text-green-600 text-center">3D Shapes</h3>
+        <div class="flex justify-center space-x-6">
+          <div class="text-center">
+            <div class="w-24 h-24 bg-gray-100 mx-auto mb-2 flex items-center justify-center">Cube</div>
+            <p class="text-sm text-gray-600">Cube</p>
+          </div>
+          <div class="text-center">
+            <div class="w-24 h-24 bg-gray-100 mx-auto mb-2 flex items-center justify-center">Sphere</div>
+            <p class="text-sm text-gray-600">Sphere</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

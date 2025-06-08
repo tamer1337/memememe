@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+
+    <a href="{% url 'statistics' %}" class="fixed top-12 left-12 z-1 text-black-600 hover:text-gray-900 transition-colors">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+    </a>
+
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Заголовок -->
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">Статистический анализ</h1>
+      <p class="text-gray-600">Введите числа, разделённые пробелами, для автоматического расчёта</p>
+    </div>
+
+    <!-- Поле ввода -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <input 
+        type="text" 
+        id="data-input"
+        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+        placeholder="Пример: 1 2 3 4 5 6 7 8 9 10"
+        autocomplete="off">
+      <p class="text-sm text-gray-500 mt-2">Разделяйте числа пробелами</p>
+    </div>
+
+    <!-- Результаты -->
+    <div id="results" class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Результаты анализа</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Основные показатели -->
+        <div class="space-y-3">
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Среднее (Mean)</p>
+            <p id="mean" class="text-xl font-medium">-</p>
+          </div>
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Медиана (Median)</p>
+            <p id="median" class="text-xl font-medium">-</p>
+          </div>
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Мода (Mode)</p>
+            <p id="mode" class="text-xl font-medium">-</p>
+          </div>
+        </div>
+
+        <!-- Меры разброса -->
+        <div class="space-y-3">
+          <div class="p-4 bg-green-50 rounded-lg">
+            <p class="text-sm text-gray-500">Дисперсия (Variance)</p>
+            <p id="variance" class="text-xl font-medium">-</p>
+          </div>
+          <div class="p-4 bg-green-50 rounded-lg">
+            <p class="text-sm text-gray-500">Стандартное отклонение (SD)</p>
+            <p id="std-dev" class="text-xl font-medium">-</p>
+          </div>
+          <div class="p-4 bg-green-50 rounded-lg">
+            <p class="text-sm text-gray-500">Размах (Range)</p>
+            <p id="range" class="text-xl font-medium">-</p>
+          </div>
+        </div>
+
+        <!-- Дополнительные показатели -->
+        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="p-4 bg-purple-50 rounded-lg">
+            <p class="text-sm text-gray-500">Коэффициент размаха</p>
+            <p id="coef-range" class="text-xl font-medium">-</p>
+          </div>
+          <div class="p-4 bg-purple-50 rounded-lg">
+            <p class="text-sm text-gray-500">Коэффициент вариации</p>
+            <p id="coef-variation" class="text-xl font-medium">-</p>
+          </div>
+          <div class="p-4 bg-purple-50 rounded-lg">
+            <p class="text-sm text-gray-500">Среднее отклонение от среднего</p>
+            <p id="mean-dev-mean" class="text-xl font-medium">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Пояснения к показателям -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Пояснения к показателям</h2>
+      
+      <div class="space-y-6">
+        <!-- Среднее -->
+        <div>
+          <h3 class="font-medium text-lg text-blue-600 mb-2">Среднее (Mean)</h3>
+          <p class="text-gray-700 mb-1">Среднее арифметическое всех значений в наборе данных.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">μ = (Σxᵢ) / n</p>
+          <p class="text-gray-600 text-sm mt-1">Где Σxᵢ - сумма всех значений, n - количество значений</p>
+        </div>
+
+        <!-- Медиана -->
+        <div>
+          <h3 class="font-medium text-lg text-blue-600 mb-2">Медиана (Median)</h3>
+          <p class="text-gray-700 mb-1">Значение, которое делит упорядоченный набор данных пополам.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">Для нечётного n: x<sub>(n+1)/2</sub><br>Для чётного n: (x<sub>n/2</sub> + x<sub>n/2+1</sub>) / 2</p>
+        </div>
+
+        <!-- Мода -->
+        <div>
+          <h3 class="font-medium text-lg text-blue-600 mb-2">Мода (Mode)</h3>
+          <p class="text-gray-700 mb-1">Наиболее часто встречающееся значение в наборе данных.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">max(f(xᵢ))</p>
+          <p class="text-gray-600 text-sm mt-1">Где f(xᵢ) - частота встречаемости значения xᵢ</p>
+        </div>
+
+        <!-- Дисперсия -->
+        <div>
+          <h3 class="font-medium text-lg text-green-600 mb-2">Дисперсия (Variance)</h3>
+          <p class="text-gray-700 mb-1">Мера разброса данных относительно среднего значения.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">σ² = Σ(xᵢ - μ)² / n</p>
+        </div>
+
+        <!-- Стандартное отклонение -->
+        <div>
+          <h3 class="font-medium text-lg text-green-600 mb-2">Стандартное отклонение (Standard Deviation)</h3>
+          <p class="text-gray-700 mb-1">Корень из дисперсии, показывает среднее отклонение значений от среднего.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">σ = √σ²</p>
+        </div>
+
+        <!-- Размах -->
+        <div>
+          <h3 class="font-medium text-lg text-green-600 mb-2">Размах (Range)</h3>
+          <p class="text-gray-700 mb-1">Разность между максимальным и минимальным значениями.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">R = x<sub>max</sub> - x<sub>min</sub></p>
+        </div>
+
+        <!-- Коэффициент размаха -->
+        <div>
+          <h3 class="font-medium text-lg text-purple-600 mb-2">Коэффициент размаха</h3>
+          <p class="text-gray-700 mb-1">Относительная мера разброса данных.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">(x<sub>max</sub> - x<sub>min</sub>) / (x<sub>max</sub> + x<sub>min</sub>)</p>
+        </div>
+
+        <!-- Коэффициент вариации -->
+        <div>
+          <h3 class="font-medium text-lg text-purple-600 mb-2">Коэффициент вариации</h3>
+          <p class="text-gray-700 mb-1">Относительное стандартное отклонение, выраженное в процентах.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">CV = (σ / μ) × 100%</p>
+        </div>
+
+        <!-- Среднее отклонение от среднего -->
+        <div>
+          <h3 class="font-medium text-lg text-purple-600 mb-2">Среднее отклонение от среднего</h3>
+          <p class="text-gray-700 mb-1">Среднее абсолютное отклонение значений от среднего.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">MAD = Σ|xᵢ - μ| / n</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// JavaScript код остаётся таким же, как в предыдущем примере
+document.getElementById('data-input').addEventListener('input', function() {
+  const input = this.value.trim();
+  const numbers = input.split(/\s+/)
+    .map(num => parseFloat(num))
+    .filter(num => !isNaN(num));
+  
+  if (numbers.length === 0) {
+    clearResults();
+    return;
+  }
+
+  const sorted = [...numbers].sort((a, b) => a - b);
+  const mean = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+  const median = calculateMedian(sorted);
+  const mode = calculateMode(numbers);
+  const variance = calculateVariance(numbers, mean);
+  const stdDev = Math.sqrt(variance);
+  const range = sorted[sorted.length - 1] - sorted[0];
+  const coefRange = range / (sorted[sorted.length - 1] + sorted[0]);
+  const coefVariation = (stdDev / mean) * 100;
+  const meanDevMean = numbers.reduce((a, b) => a + Math.abs(b - mean), 0) / numbers.length;
+
+  document.getElementById('mean').textContent = mean.toFixed(2);
+  document.getElementById('median').textContent = median.toFixed(2);
+  document.getElementById('mode').textContent = mode;
+  document.getElementById('variance').textContent = variance.toFixed(2);
+  document.getElementById('std-dev').textContent = stdDev.toFixed(2);
+  document.getElementById('range').textContent = range;
+  document.getElementById('coef-range').textContent = coefRange.toFixed(3);
+  document.getElementById('coef-variation').textContent = coefVariation.toFixed(2) + '%';
+  document.getElementById('mean-dev-mean').textContent = meanDevMean.toFixed(2);
+});
+
+function clearResults() {
+  const elements = document.querySelectorAll('#results [class*="text-xl"]');
+  elements.forEach(el => el.textContent = '-');
+}
+
+function calculateMedian(sortedNumbers) {
+  const mid = Math.floor(sortedNumbers.length / 2);
+  return sortedNumbers.length % 2 !== 0 
+    ? sortedNumbers[mid] 
+    : (sortedNumbers[mid - 1] + sortedNumbers[mid]) / 2;
+}
+
+function calculateMode(numbers) {
+  const frequency = {};
+  numbers.forEach(num => frequency[num] = (frequency[num] || 0) + 1);
+  
+  const maxFreq = Math.max(...Object.values(frequency));
+  const modes = Object.keys(frequency).filter(num => frequency[num] === maxFreq);
+  
+  return modes.length === numbers.length ? 'Нет моды' : modes.join(', ');
+}
+
+function calculateVariance(numbers, mean) {
+  return numbers.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / numbers.length;
+}
+</script>
+{% endblock %}

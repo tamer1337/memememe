@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6 text-gray-800"><a href="{% url 'home' %}" class="hover:text-gray-300 transition-colors duration-300">tap menu</a> > Subject Categories</h1>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Statistics -->
+    <a href="{% url 'statistics' %}" class="bg-yellow-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <h2 class="text-xl font-semibold mb-3 text-yellow-800">Statistics</h2>
+      <p class="text-yellow-600">41 Calculators</p>
+    </a>
+
+    <!-- Mensuration -->
+    <a href="{% url 'mensuration' %}" class="bg-red-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <h2 class="text-xl font-semibold mb-3 text-red-800">Mensuration</h2>
+      <p class="text-red-600">03 Topics</p>
+    </a>
+  </div>
+</div>
+{% endblock %}

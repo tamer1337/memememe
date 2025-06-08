@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-6">Удаление слова</h1>
+    
+    {% if not user.is_staff %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        У вас нет прав для удаления слов
+    </div>
+    {% else %}
+    
+    <div class="bg-white rounded-lg shadow p-6">
+        <p class="text-lg mb-4">Вы уверены, что хотите удалить слово:</p>
+        <div class="bg-gray-50 p-4 rounded mb-6">
+            <h2 class="text-xl font-bold text-red-600">{{ object.word }}</h2>
+            <p class="mt-2 text-gray-600">{{ object.definition }}</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="flex items-center justify-start space-x-4">
+                <button type="submit" 
+                        class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">
+                    Да, удалить
+                </button>
+                <a href="{% url 'dictionary' %}" 
+                   class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded transition-colors">
+                    Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+    
+    {% if object.author %}
+    <div class="mt-4 text-sm text-gray-500">
+        Слово добавлено: {{ object.author.username }} ({{ object.created_at|date:"d.m.Y H:i" }})
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

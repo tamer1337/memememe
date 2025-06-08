@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+  <a href="{% url 'statistics' %}" class="fixed top-12 left-12 z-1 text-black-600 hover:text-gray-900 transition-colors">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+  </a>
+
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">t-тест Стьюдента для независимых выборок</h1>
+      <p class="text-gray-600">Введите два ряда чисел через пробел, без запятых</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6 space-y-4">
+      <div>
+        <label for="sample1" class="block text-sm font-medium text-gray-700 mb-1">Выборка 1</label>
+        <input type="text" id="sample1" class="w-full px-4 py-3 rounded-lg border border-gray-300" placeholder="Пример: 10 12 13 15 17">
+      </div>
+      <div>
+        <label for="sample2" class="block text-sm font-medium text-gray-700 mb-1">Выборка 2</label>
+        <input type="text" id="sample2" class="w-full px-4 py-3 rounded-lg border border-gray-300" placeholder="Пример: 14 16 18 19 20">
+      </div>
+    </div>
+
+    <div id="results" class="bg-white p-6 rounded-lg shadow-md space-y-4">
+      <div><strong>Среднее выборки 1 (𝑥̄₁):</strong> <span id="mean1">-</span></div>
+      <div><strong>Среднее выборки 2 (𝑥̄₂):</strong> <span id="mean2">-</span></div>
+      <div><strong>Объединённая дисперсия (𝑠²ₚ):</strong> <span id="pooled">-</span></div>
+      <div><strong>t-статистика (t):</strong> <span id="tvalue">-</span></div>
+      <div><strong>Степени свободы (df):</strong> <span id="df">-</span></div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md mt-6 space-y-4 text-sm text-gray-800 leading-relaxed">
+      <h2 class="text-xl font-bold mb-2">Что такое t-тест?</h2>
+      <p>t-тест Стьюдента — это метод статистического анализа, который используется для сравнения средних значений двух независимых выборок и определения, является ли разница между ними статистически значимой.</p>
+
+      <h2 class="text-xl font-bold mt-4 mb-2">Условия применения:</h2>
+      <p>Данные должны быть числовыми, выборки независимыми, объём каждой выборки желательно ≤ 30, дисперсии приблизительно равны.</p>
+
+      <h2 class="text-xl font-bold mt-4 mb-2">Формулы:</h2>
+      <p><strong>Среднее значение:</strong><br> 
+      $$\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i$$</p>
+
+      <p><strong>Дисперсия выборки:</strong><br>
+      $$s^2 = \frac{1}{n - 1} \sum_{i=1}^n (x_i - \bar{x})^2$$</p>
+
+      <p><strong>Объединённая дисперсия:</strong><br>
+      $$s_p^2 = \frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2}$$</p>
+
+      <p><strong>Стандартная ошибка разности средних:</strong><br>
+      $$SE = \sqrt{s_p^2 \left( \frac{1}{n_1} + \frac{1}{n_2} \right)}$$</p>
+
+      <p><strong>t-статистика:</strong><br>
+      $$t = \frac{\bar{x}_1 - \bar{x}_2}{SE}$$</p>
+
+      <p><strong>Степени свободы:</strong><br>
+      $$df = n_1 + n_2 - 2$$</p>
+
+      <h2 class="text-xl font-bold mt-4 mb-2">Интерпретация результата:</h2>
+      <p>Чем больше абсолютное значение t, тем выше вероятность, что разница между средними значима. Для точного вывода сравнивают с критическим значением или вычисляют p-value.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const input1 = document.getElementById('sample1');
+const input2 = document.getElementById('sample2');
+[input1, input2].forEach(input => input.addEventListener('input', calculateTTest));
+
+function calculateTTest() {
+  const raw1 = input1.value.trim().split(/\s+/).map(Number).filter(x => !isNaN(x));
+  const raw2 = input2.value.trim().split(/\s+/).map(Number).filter(x => !isNaN(x));
+
+  if (raw1.length < 2 || raw2.length < 2) return clearResults();
+
+  const mean = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+  const variance = (arr, m) => arr.reduce((acc, x) => acc + (x - m) ** 2, 0) / (arr.length - 1);
+
+  const n1 = raw1.length;
+  const n2 = raw2.length;
+  const mean1 = mean(raw1);
+  const mean2 = mean(raw2);
+  const var1 = variance(raw1, mean1);
+  const var2 = variance(raw2, mean2);
+
+  const pooledVar = ((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2);
+  const se = Math.sqrt(pooledVar * (1 / n1 + 1 / n2));
+  const t = (mean1 - mean2) / se;
+  const df = n1 + n2 - 2;
+
+  document.getElementById('mean1').textContent = mean1.toFixed(6);
+  document.getElementById('mean2').textContent = mean2.toFixed(6);
+  document.getElementById('pooled').textContent = pooledVar.toFixed(6);
+  document.getElementById('tvalue').textContent = t.toFixed(6);
+  document.getElementById('df').textContent = df;
+}
+
+function clearResults() {
+  document.getElementById('mean1').textContent = '-';
+  document.getElementById('mean2').textContent = '-';
+  document.getElementById('pooled').textContent = '-';
+  document.getElementById('tvalue').textContent = '-';
+  document.getElementById('df').textContent = '-';
+}
+</script>
+{% endblock %}

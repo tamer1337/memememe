@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">Statistical Calculators</h1>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Control Charts -->
+
+    <a href="{% url 'static_analys' %}" class="bg-green-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <h2 class="text-xl font-semibold mb-3 text-green-800">Статистический анализ</h2>
+    </a>
+
+    <a href="{% url 'weight_mean' %}" class="bg-green-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <h2 class="text-xl font-semibold mb-3 text-green-800">Взвешенное среднее</h2>
+    </a>
+
+    <a href="{% url 'moments' %}" class="bg-green-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <h2 class="text-xl font-semibold mb-3 text-green-800">Калькулятор моментов</h2>
+    </a>
+
+    <a href="{% url 'sensitivity' %}" class="bg-green-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <h2 class="text-xl font-semibold mb-3 text-green-800">Чувствительность и специфичность теста</h2>
+    </a>
+
+    <a href="{% url 'deviation' %}" class="bg-green-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <h2 class="text-xl font-semibold mb-3 text-green-800">Стандартное отклонение</h2>
+    </a>
+
+    <a href="{% url 'ttest' %}" class="bg-green-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <h2 class="text-xl font-semibold mb-3 text-green-800">t-тест для двух выборок</h2>
+    </a>
+
+    
+  </div>
+</div>
+
+<a href="{% url 'math_solver_base' %}" 
+   class="fixed top-12 left-12 text-black hover:text-gray-700 transition-colors">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+</a>
+{% endblock %}

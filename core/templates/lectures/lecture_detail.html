@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="text-center mb-8">
+        <a href="{% url 'lectures_list' %}" 
+           class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Вернуться к списку лекций
+        </a>
+    </div>
+
+    <!-- Шапка лекции -->
+    <div class="mb-8">
+        {% if lecture.image %}
+        <img src="{{ lecture.image.url }}" 
+             alt="{{ lecture.title }}" 
+             class="w-full h-64 object-cover rounded-lg mb-4">
+        {% endif %}
+        
+        <div class="flex items-center gap-4 mb-4">
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                {{ lecture.get_grade_display }}
+            </span>
+            <span class="text-gray-500">{{ lecture.created_at|date:"d.m.Y" }}</span>
+        </div>
+        
+        <h1 class="text-3xl font-bold mb-4">{{ lecture.title }}</h1>
+        {% if lecture.description %}
+        <p class="text-gray-700 mb-6">{{ lecture.description }}</p>
+        {% endif %}
+    </div>
+    
+    <!-- Просмотр PDF во всю ширину -->
+    <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold">Содержание лекции</h2>
+        </div>
+        
+        <div id="pdf-viewer" class="w-full overflow-hidden">
+            <div class="flex justify-center items-center py-12 bg-gray-100">
+                <div class="text-center">
+                    <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <p class="mt-4 text-gray-600">Загрузка лекции...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Кнопка скачать лекцию (перемещена под просмотрщиком) -->
+        <div class="mt-6 text-center">
+            <a href="{{ lecture.file.url }}" 
+               download 
+               class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Скачать лекцию (PDF)
+            </a>
+        </div>
+    </div>
+
+    <!-- Кнопка назад в подвале -->
+    <div class="text-center mb-8">
+        <a href="{% url 'lectures_list' %}" 
+           class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            </svg>
+            Вернуться к списку лекций
+        </a>
+    </div>
+
+    <!-- Кнопки для админов -->
+    {% if request.user.is_staff %}
+    <div class="text-center space-x-4">
+        <a href="{% url 'edit_lecture' lecture.id %}" 
+           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+            Редактировать
+        </a>
+        
+        <form action="{% url 'delete_lecture' lecture.id %}" method="post" class="inline-block mt-4">
+            {% csrf_token %}
+            <button type="submit" 
+                    class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    onclick="return confirm('Вы уверены, что хотите удалить эту лекцию?')">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                Удалить лекцию
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Подключаем библиотеку PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+
+<script>
+// Инициализация PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+const pdfUrl = "{{ lecture.file.url }}";
+const container = document.getElementById('pdf-viewer');
+
+// Загрузка и отображение PDF во всю ширину
+function loadFullWidthPdf() {
+    pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+        const containerWidth = container.clientWidth - 40; // -40 для отступов
+        
+        // Очищаем контейнер
+        container.innerHTML = '';
+        
+        // Отображаем все страницы
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            pdf.getPage(pageNum).then(page => {
+                // Вычисляем масштаб по ширине контейнера
+                const viewport = page.getViewport({ scale: 1 });
+                const scale = containerWidth / viewport.width;
+                const scaledViewport = page.getViewport({ scale: scale });
+                
+                // Создаем canvas
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = scaledViewport.height;
+                canvas.width = scaledViewport.width;
+                canvas.className = 'w-full mb-6 shadow-md';
+                
+                // Добавляем canvas в контейнер
+                container.appendChild(canvas);
+                
+                // Рендерим страницу
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: scaledViewport
+                };
+                
+                page.render(renderContext);
+            });
+        }
+    }).catch(error => {
+        console.error('Ошибка загрузки PDF:', error);
+        container.innerHTML = `
+            <div class="flex justify-center items-center py-12 bg-gray-100">
+                <div class="text-center p-4">
+                    <svg class="w-16 h-16 mx-auto text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <h3 class="text-xl font-medium mt-4">Ошибка загрузки лекции</h3>
+                    <p class="text-gray-600 mt-2">Не удалось загрузить файл. Попробуйте скачать его.</p>
+                </div>
+            </div>
+        `;
+    });
+}
+
+// Запускаем загрузку PDF при открытии страницы
+loadFullWidthPdf();
+
+// Перерисовываем при изменении размера окна
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        loadFullWidthPdf();
+    }, 300);
+});
+</script>
+
+<style>
+    /* Стили для плавной анимации */
+    .transition-colors {
+        transition: background-color 0.3s ease;
+    }
+    
+    #pdf-viewer canvas {
+        display: block;
+        margin: 0 auto;
+        background: white;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://img3.akspic.ru/crops/4/4/4/0/8/180444/180444-gora-gornyj_relef-oblako-gornyj_hrebet-holm-3840x2160.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+</style>
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Заголовок и кнопки -->
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <h1 class="text-3xl font-bold text-white">
+            <a href="{% url 'home' %}" class="hover:text-gray-300 transition-colors duration-300">menu tap</a> 
+            &gt; Видеолекции
+        </h1>
+        {% if user.is_authenticated %}
+        <a href="{% url 'add_video_lecture' %}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Добавить лекцию
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Сообщения -->
+    {% include 'partials/messages.html' %}
+
+    <!-- Список лекций -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for lecture in page_obj %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow transform hover:-translate-y-1">
+            <!-- Видео -->
+            <div class="relative pt-[56.25%]">
+                <iframe class="absolute top-0 left-0 w-full h-full" 
+                        src="https://www.youtube.com/embed/{{ lecture.extract_youtube_id }}" 
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen
+                        loading="lazy">
+                </iframe>
+            </div>
+
+            <!-- Контент -->
+            <div class="p-4">
+                <h3 class="text-xl font-semibold mb-2">{{ lecture.title }}</h3>
+                <p class="text-gray-600 mb-2">{{ lecture.description|truncatechars:100 }}</p>
+                
+                <!-- Теги -->
+                <div class="mt-2 flex flex-wrap gap-2">
+                    {% for tag in lecture.tags.all %}
+                    <span class="text-xs px-2 py-1 rounded-full" 
+                          style="background-color: {{ tag.color }}; color: white;">
+                        {{ tag.name }}
+                    </span>
+                    {% endfor %}
+                </div>
+
+                <!-- Автор и дата -->
+                <div class="mt-4 flex justify-between items-center text-sm text-gray-500">
+                    <span>@{{ lecture.author.username }}</span>
+                    <span>{{ lecture.created_at|date:"d.m.Y" }}</span>
+                </div>
+
+                <!-- Кнопки управления -->
+                {% if user == lecture.author or user.is_superuser %}
+                <div class="mt-4 flex justify-end gap-3 border-t pt-3">
+                    <a href="{% url 'edit_video_lecture' lecture.id %}" 
+                       class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                        Изменить
+                    </a>
+                    <form action="{% url 'delete_video_lecture' lecture.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="text-red-600 hover:text-red-800 flex items-center gap-1"
+                                onclick="return confirm('Вы уверены, что хотите удалить эту лекцию?')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Удалить
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if page_obj.paginator.num_pages > 1 %}
+<div class="mt-8 flex justify-center items-center space-x-2">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 border rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors">
+        &laquo;
+    </a>
+    {% else %}
+    <span class="px-4 py-2 border rounded-md bg-gray-100 text-gray-400 cursor-not-allowed">
+        &laquo;
+    </span>
+    {% endif %}
+    
+    <span class="px-4 py-2 bg-white-600 text-white rounded-md">
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 border rounded-md bg-white text-gray-700 hover:bg-gray-50 transition-colors">
+        &raquo;
+    </a>
+    {% else %}
+    <span class="px-4 py-2 border rounded-md bg-gray-100 text-gray-400 cursor-not-allowed">
+        &raquo;
+    </span>
+    {% endif %}
+</div>
+{% endif %}
+</div>
+{% endblock %}

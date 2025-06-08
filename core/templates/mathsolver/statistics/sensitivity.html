@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+
+    <a href="{% url 'statistics' %}" class="fixed top-12 left-12 z-1 text-black-600 hover:text-gray-900 transition-colors">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+    </a>
+
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Заголовок -->
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">Чувствительность и специфичность теста</h1>
+      <p class="text-gray-600">Введите значения для оценки диагностического теста</p>
+    </div>
+
+    <!-- Поля ввода -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label for="tp-input" class="block text-sm font-medium text-gray-700 mb-1">Истинно положительные (TP)</label>
+        <input 
+          type="number" 
+          id="tp-input"
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+          placeholder="Пример: 50"
+          min="0"
+          autocomplete="off">
+      </div>
+      
+      <div>
+        <label for="tn-input" class="block text-sm font-medium text-gray-700 mb-1">Истинно отрицательные (TN)</label>
+        <input 
+          type="number" 
+          id="tn-input"
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+          placeholder="Пример: 100"
+          min="0"
+          autocomplete="off">
+      </div>
+      
+      <div>
+        <label for="fp-input" class="block text-sm font-medium text-gray-700 mb-1">Ложно положительные (FP)</label>
+        <input 
+          type="number" 
+          id="fp-input"
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+          placeholder="Пример: 10"
+          min="0"
+          autocomplete="off">
+      </div>
+      
+      <div>
+        <label for="fn-input" class="block text-sm font-medium text-gray-700 mb-1">Ложно отрицательные (FN)</label>
+        <input 
+          type="number" 
+          id="fn-input"
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+          placeholder="Пример: 5"
+          min="0"
+          autocomplete="off">
+      </div>
+      
+      <p class="text-sm text-gray-500 md:col-span-2">Введите неотрицательные целые числа</p>
+    </div>
+
+    <!-- Результаты -->
+    <div id="results" class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Результаты оценки теста</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Основные показатели -->
+        <div class="space-y-3">
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Чувствительность (Sensitivity)</p>
+            <p id="sensitivity" class="text-2xl font-medium">-</p>
+            <p id="sensitivity-percent" class="text-sm text-gray-600">-</p>
+          </div>
+          
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Специфичность (Specificity)</p>
+            <p id="specificity" class="text-2xl font-medium">-</p>
+            <p id="specificity-percent" class="text-sm text-gray-600">-</p>
+          </div>
+        </div>
+
+        <!-- Дополнительные показатели -->
+        <div class="space-y-3">
+          <div class="p-4 bg-green-50 rounded-lg">
+            <p class="text-sm text-gray-500">Положительная предсказательная ценность (PPV)</p>
+            <p id="ppv" class="text-xl font-medium">-</p>
+            <p id="ppv-percent" class="text-sm text-gray-600">-</p>
+          </div>
+          
+          <div class="p-4 bg-green-50 rounded-lg">
+            <p class="text-sm text-gray-500">Отрицательная предсказательная ценность (NPV)</p>
+            <p id="npv" class="text-xl font-medium">-</p>
+            <p id="npv-percent" class="text-sm text-gray-600">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Пояснения к показателям -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Пояснения к показателям</h2>
+      
+      <div class="space-y-6">
+        <!-- Чувствительность -->
+        <div>
+          <h3 class="font-medium text-lg text-blue-600 mb-2">Чувствительность (Sensitivity)</h3>
+          <p class="text-gray-700 mb-1">Способность теста правильно идентифицировать больных людей.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">Чувствительность = ИП / (ИП + ЛО) = TP / (TP + FN)</p>
+          <p class="text-gray-600 text-sm mt-1">Где ИП (TP) - истинно положительные, ЛО (FN) - ложно отрицательные</p>
+        </div>
+
+        <!-- Специфичность -->
+        <div>
+          <h3 class="font-medium text-lg text-blue-600 mb-2">Специфичность (Specificity)</h3>
+          <p class="text-gray-700 mb-1">Способность теста правильно идентифицировать здоровых людей.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">Специфичность = ИО / (ИО + ЛП) = TN / (TN + FP)</p>
+          <p class="text-gray-600 text-sm mt-1">Где ИО (TN) - истинно отрицательные, ЛП (FP) - ложно положительные</p>
+        </div>
+
+        <!-- PPV -->
+        <div>
+          <h3 class="font-medium text-lg text-green-600 mb-2">Положительная предсказательная ценность (PPV)</h3>
+          <p class="text-gray-700 mb-1">Вероятность того, что человек действительно болен при положительном результате теста.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">PPV = ИП / (ИП + ЛП) = TP / (TP + FP)</p>
+        </div>
+
+        <!-- NPV -->
+        <div>
+          <h3 class="font-medium text-lg text-green-600 mb-2">Отрицательная предсказательная ценность (NPV)</h3>
+          <p class="text-gray-700 mb-1">Вероятность того, что человек действительно здоров при отрицательном результате теста.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">NPV = ИО / (ИО + ЛО) = TN / (TN + FN)</p>
+        </div>
+
+        <!-- Таблица сопряженности -->
+        <div>
+          <h3 class="font-medium text-lg text-purple-600 mb-2">Таблица сопряженности</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="py-2 px-4 border"></th>
+                  <th class="py-2 px-4 border">Болезнь есть</th>
+                  <th class="py-2 px-4 border">Болезни нет</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="py-2 px-4 border font-medium">Тест положительный</td>
+                  <td class="py-2 px-4 border text-center">ИП (TP)</td>
+                  <td class="py-2 px-4 border text-center">ЛП (FP)</td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-4 border font-medium">Тест отрицательный</td>
+                  <td class="py-2 px-4 border text-center">ЛО (FN)</td>
+                  <td class="py-2 px-4 border text-center">ИО (TN)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('tp-input').addEventListener('input', calculateMetrics);
+document.getElementById('tn-input').addEventListener('input', calculateMetrics);
+document.getElementById('fp-input').addEventListener('input', calculateMetrics);
+document.getElementById('fn-input').addEventListener('input', calculateMetrics);
+
+function calculateMetrics() {
+  const tp = parseInt(document.getElementById('tp-input').value) || 0;
+  const tn = parseInt(document.getElementById('tn-input').value) || 0;
+  const fp = parseInt(document.getElementById('fp-input').value) || 0;
+  const fn = parseInt(document.getElementById('fn-input').value) || 0;
+  
+  // Проверяем, что все значения неотрицательные
+  if (tp < 0 || tn < 0 || fp < 0 || fn < 0) {
+    clearResults();
+    return;
+  }
+  
+  // Рассчитываем показатели
+  const sensitivity = (tp + fn) === 0 ? 0 : tp / (tp + fn);
+  const specificity = (tn + fp) === 0 ? 0 : tn / (tn + fp);
+  const ppv = (tp + fp) === 0 ? 0 : tp / (tp + fp);
+  const npv = (tn + fn) === 0 ? 0 : tn / (tn + fn);
+  
+  // Обновляем результаты
+  document.getElementById('sensitivity').textContent = sensitivity.toFixed(4);
+  document.getElementById('sensitivity-percent').textContent = `(${(sensitivity * 100).toFixed(2)}%)`;
+  
+  document.getElementById('specificity').textContent = specificity.toFixed(4);
+  document.getElementById('specificity-percent').textContent = `(${(specificity * 100).toFixed(2)}%)`;
+  
+  document.getElementById('ppv').textContent = ppv.toFixed(4);
+  document.getElementById('ppv-percent').textContent = `(${(ppv * 100).toFixed(2)}%)`;
+  
+  document.getElementById('npv').textContent = npv.toFixed(4);
+  document.getElementById('npv-percent').textContent = `(${(npv * 100).toFixed(2)}%)`;
+}
+
+function clearResults() {
+  document.getElementById('sensitivity').textContent = '-';
+  document.getElementById('sensitivity-percent').textContent = '-';
+  document.getElementById('specificity').textContent = '-';
+  document.getElementById('specificity-percent').textContent = '-';
+  document.getElementById('ppv').textContent = '-';
+  document.getElementById('ppv-percent').textContent = '-';
+  document.getElementById('npv').textContent = '-';
+  document.getElementById('npv-percent').textContent = '-';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Система баллов{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-indigo-900 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold flex items-center">
+                <i class="fas fa-coins mr-2"></i>
+                Баллы
+            </a>
+            <div class="flex items-center space-x-4">
+                {% if user.is_authenticated %}
+                <span class="hidden md:inline">Привет, {{ user.username }}!</span>
+                <a href="{% url 'grind_main' %}" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 rounded-lg transition">
+                    <i class="fas fa-star mr-2"></i>Накопление
+                </a>
+                <a href="{% url 'logout' %}" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition">
+                    Выйти
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition">
+                    Войти
+                </a>
+                <a href="{% url 'signup' %}" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition">
+                    Регистрация
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2023 Система накопления баллов. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script>
+        // CSRF для AJAX запросов
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        const csrftoken = getCookie('csrftoken');
+        
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

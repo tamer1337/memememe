@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    body {
+        background-image: url('https://wallpapercave.com/wp/wp7108498.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    @keyframes fade-in-down {
+        0% {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-down {
+        animation: fade-in-down 0.8s ease-out forwards;
+    }
+</style>
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Заголовок и кнопки управления -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-white">
+  <a href="{% url 'home' %}" class="hover:text-gray-300 transition-colors duration-300">menu tap</a> &gt; Тестирование
+</h1>
+
+        
+        <div class="flex gap-3">
+            {% if user.is_authenticated and user.is_staff %}
+            <a href="{% url 'add_test' %}" 
+               class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Добавить тест
+            </a>
+            {% endif %}
+            
+            <a href="{% url 'home' %}" 
+               class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                На главную
+            </a>
+        </div>
+    </div>
+
+    
+
+    <!-- Список тестов -->
+    <div class="space-y-6">
+        {% for test in tests %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="text-xl font-bold">
+                        <a href="{% url 'test_detail' test.pk %}" class="hover:text-blue-600 transition-colors">
+                            {{ test.title }}
+                        </a>
+                    </h3>
+                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                        {{ test.get_difficulty_display }}
+                    </span>
+                </div>
+                
+                <p class="text-gray-600 mb-2">{{ test.description|truncatechars:150 }}</p>
+                
+                <div class="flex flex-wrap gap-2 mb-4">
+                    {% for tag in test.tags.all %}
+                    <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                        {{ tag.name }}
+                    </span>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-gray-500">
+                        Вопросов: {{ test.questions.count }}
+                        {% if test.time_limit %} | Время: {{ test.time_limit }} мин.{% endif %}
+                    </div>
+                    
+                    <a href="{% url 'test_detail' test.pk %}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                        Начать тест
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="bg-white rounded-lg shadow-sm p-6 text-center">
+            <p class="text-gray-500">Тесты не найдены</p>
+            {% if user.is_authenticated and user.is_staff %}
+            <a href="{% url 'add_test' %}" class="text-blue-600 hover:text-blue-800 mt-2 inline-block">
+                Добавить первый тест
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if is_paginated %}
+    <div class="mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="text-gray-500 text-sm">
+            Показано {{ tests|length }} из {{ page_obj.paginator.count }} тестов
+        </div>
+        
+        <div class="flex gap-2">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+               class="bg-gray-200 px-3 py-2 rounded-lg hover:bg-gray-300">
+                Назад
+            </a>
+            {% endif %}
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+               class="bg-gray-200 px-3 py-2 rounded-lg hover:bg-gray-300">
+                Вперед
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+</div>
+{% endblock %}

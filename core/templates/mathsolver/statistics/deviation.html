@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+  <a href="{% url 'statistics' %}" class="fixed top-12 left-12 z-1 text-black-600 hover:text-gray-900 transition-colors">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+  </a>
+
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">Стандартное отклонение</h1>
+      <p class="text-gray-600">Введите значения через пробел без запятых</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+      <label for="data-input" class="block text-sm font-medium text-gray-700 mb-1">Данные</label>
+      <input 
+        type="text" 
+        id="data-input"
+        class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+        placeholder="Пример: 10000 15000 30000 40000"
+        autocomplete="off">
+    </div>
+
+    <div class="mb-6 flex items-center space-x-4">
+      <label class="inline-flex items-center">
+        <input type="radio" name="data-type" value="population" checked class="text-blue-500 focus:ring-blue-500">
+        <span class="ml-2 text-gray-700">Population (совокупность)</span>
+      </label>
+      <label class="inline-flex items-center">
+        <input type="radio" name="data-type" value="sample" class="text-blue-500 focus:ring-blue-500">
+        <span class="ml-2 text-gray-700">Sample (выборка)</span>
+      </label>
+    </div>
+
+    <div id="results" class="bg-white p-6 rounded-lg shadow-md space-y-4 text-gray-800">
+      <div><strong>Количество значений (n):</strong> <span id="count">-</span></div>
+      <div><strong>Сумма (Σx):</strong> <span id="sum">-</span></div>
+      <div><strong>Среднее (μ):</strong> <span id="mean">-</span></div>
+      <div><strong>Дисперсия (σ² / s²):</strong> <span id="variance">-</span></div>
+      <div><strong>Стандартное отклонение (σ / s):</strong> <span id="stddev">-</span></div>
+      <div><strong>Стандартная ошибка среднего (sx̄):</strong> <span id="confint">-</span></div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md mt-6 text-gray-700 text-sm leading-relaxed">
+      <h2 class="text-xl font-semibold mb-3">Что означают эти показатели и как они считаются:</h2>
+
+      <p><strong>Количество значений (n)</strong> — число введённых данных.</p>
+      <p><em>Формула:</em> $$n = \text{число значений}$$</p>
+
+      <p><strong>Сумма (Σx)</strong> — сумма всех значений.</p>
+      <p><em>Формула:</em> $$\Sigma x = \sum_{i=1}^{n} x_i$$</p>
+
+      <p><strong>Среднее (μ)</strong> — среднее арифметическое значений.</p>
+      <p><em>Формула:</em> $$\mu = \frac{1}{n} \sum_{i=1}^{n} x_i$$</p>
+
+      <p><strong>Дисперсия (σ² / s²)</strong> — мера разброса данных вокруг среднего. Для совокупности делим на $n$, для выборки — на $n-1$.</p>
+      <p><em>Формула:</em> $$\sigma^2 = \frac{1}{n} \sum_{i=1}^{n} (x_i - \mu)^2 \quad \text{(population)}$$
+      <br>
+      $$s^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2 \quad \text{(sample)}$$</p>
+
+      <p><strong>Стандартное отклонение (σ / s)</strong> — корень квадратный из дисперсии, показывает среднее отклонение от среднего.</p>
+      <p><em>Формула:</em> $$\sigma = \sqrt{\sigma^2}, \quad s = \sqrt{s^2}$$</p>
+
+      <p><strong>Стандартная ошибка среднего (sx̄)</strong> — показывает, насколько точно среднее выборки оценивает истинное среднее совокупности.</p>
+      <p><em>Формула:</em> $$sx̄ = \frac{\sigma}{\sqrt{n}} \quad \text{или} \quad \frac{s}{\sqrt{n}}$$</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const input = document.getElementById('data-input');
+const radios = document.querySelectorAll('input[name="data-type"]');
+
+input.addEventListener('input', calculate);
+radios.forEach(radio => radio.addEventListener('change', calculate));
+
+function calculate() {
+  const raw = input.value.trim();
+  if (!raw) return clearResults();
+
+  const values = raw.split(/\s+/).map(Number).filter(x => !isNaN(x));
+  const n = values.length;
+  if (n === 0) return clearResults();
+
+  const sum = values.reduce((a, b) => a + b, 0);
+  const mean = sum / n;
+  const isSample = document.querySelector('input[name="data-type"]:checked').value === 'sample';
+
+  const variance = values.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / (isSample ? (n - 1) : n);
+  const stddev = Math.sqrt(variance);
+  const confint = stddev / Math.sqrt(n);
+
+  document.getElementById('count').textContent = n;
+  document.getElementById('sum').textContent = sum.toFixed(6);
+  document.getElementById('mean').textContent = mean.toFixed(6);
+  document.getElementById('variance').textContent = variance.toFixed(6);
+  document.getElementById('stddev').textContent = stddev.toFixed(6);
+  document.getElementById('confint').textContent = confint.toFixed(6);
+}
+
+function clearResults() {
+  ['count', 'sum', 'mean', 'variance', 'stddev', 'confint'].forEach(id => {
+    document.getElementById(id).textContent = '-';
+  });
+}
+</script>
+{% endblock %}

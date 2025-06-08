@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <!-- Хлебные крошки -->
+        <nav class="mb-4 text-sm" aria-label="Навигация">
+            <a href="{% url 'video_lectures' %}" class="text-blue-600 hover:text-blue-800">Видеолекции</a> 
+            <span class="mx-2">/</span>
+            <span class="text-gray-500">Редактирование</span>
+        </nav>
+
+        <h1 class="text-2xl font-bold mb-6">Редактировать: {{ lecture.title|truncatechars:40 }}</h1>
+        
+        <!-- Сообщения -->
+        {% include 'partials/form_messages.html' %}
+        
+        <!-- Основная форма редактирования -->
+        <form method="post" class="space-y-4" id="edit-form">
+            {% csrf_token %}
+            
+            <!-- Поля формы -->
+            {% include 'partials/form_field.html' with field=form.title %}
+            {% include 'partials/form_field.html' with field=form.description %}
+            
+            <!-- Поле YouTube URL -->
+            <div>
+                {% include 'partials/form_field.html' with field=form.youtube_url %}
+                <div id="video-preview" class="mt-2 hidden">
+                    <iframe class="w-full aspect-video rounded-lg" frameborder="0"></iframe>
+                </div>
+            </div>
+
+            <!-- Кнопки сохранить и отмена -->
+            <div class="flex flex-col-reverse sm:flex-row justify-between items-center pt-6 gap-4">
+                <div class="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
+                    <a href="{% url 'video_lectures' %}" 
+                       class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 
+                              transition-colors text-center">
+                        Отмена
+                    </a>
+                    <button type="submit" 
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+                                   transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Сохранить изменения
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Форма удаления ВНЕ основной формы -->
+        {% if user.is_superuser or user == lecture.author %}
+        <form method="post" 
+              action="{% url 'delete_video_lecture' lecture.id %}"
+              class="mt-4"
+              onsubmit="return confirm('Вы уверены, что хотите удалить эту лекцию?');">
+            {% csrf_token %}
+            <button type="submit" 
+                    class="w-full px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 
+                           transition-colors flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                Удалить лекцию
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Стили и скрипты -->
+{% include 'partials/select2_styles.html' %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация Select2
+    $('select[multiple]').select2({
+        placeholder: "Выберите теги",
+        allowClear: true,
+        width: '100%',
+        dropdownParent: $('#edit-form'),
+        language: { noResults: () => "Теги не найдены" }
+    });
+
+    // Превью видео
+    const youtubeUrlField = document.getElementById('id_youtube_url');
+    const previewContainer = document.getElementById('video-preview');
+    const iframe = previewContainer.querySelector('iframe');
+
+    function updatePreview() {
+        const url = youtubeUrlField.value;
+        const videoId = extractYoutubeId(url);
+        
+        if (videoId) {
+            iframe.src = `https://www.youtube.com/embed/${videoId}?rel=0`;
+            previewContainer.classList.remove('hidden');
+        } else {
+            previewContainer.classList.add('hidden');
+        }
+    }
+
+    youtubeUrlField.addEventListener('input', updatePreview);
+    updatePreview();
+});
+
+function extractYoutubeId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+}
+</script>
+{% endblock %}

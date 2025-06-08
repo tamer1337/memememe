@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="h-screen w-full fixed top-0 left-0 -z-10">
+    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa" 
+         alt="Background"
+         class="w-full h-full object-cover object-center">
+</div>
+
+<div class="min-h-screen relative z-10">
+    <div class="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <!-- Кнопка "Назад" -->
+        <div class="mb-8">
+            <a href="{% url 'test_list' %}" 
+               class="inline-flex items-center text-white hover:text-blue-200 font-medium 
+                      backdrop-blur-sm px-4 py-2 rounded-lg">
+                ← Назад к списку тестов
+            </a>
+        </div>
+
+        <!-- Форма теста -->
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            <div class="bg-white/90 rounded-xl shadow-2xl p-8 backdrop-blur-sm">
+                
+                <!-- Заголовок теста -->
+                <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">
+                    {{ test.title }}
+                </h1>
+
+                <!-- Вопросы -->
+                {% for question in test.questions.all %}
+                <div class="mb-8 p-4 border-b border-gray-200 last:border-0">
+                    <!-- Текст вопроса -->
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">
+                        Вопрос {{ forloop.counter }}: {{ question.text }}
+                    </h3>
+
+                    <!-- Изображение вопроса -->
+                    {% if question.image %}
+                    <div class="mb-4 rounded-xl overflow-hidden shadow-lg">
+                        <img src="{{ question.image.url }}" 
+                             alt="Иллюстрация к вопросу" 
+                             class="w-full h-64 object-cover">
+                    </div>
+                    {% endif %}
+
+                    <!-- Варианты ответов -->
+                    <div class="space-y-3">
+                        {% for answer in question.answers.all %}
+                        <label class="flex items-center space-x-3 p-4 border border-gray-200 rounded-xl
+                                      hover:bg-gray-50 transition-all cursor-pointer">
+                            <input type="radio" 
+                                   name="question_{{ question.id }}" 
+                                   value="{{ answer.id }}" 
+                                   class="h-5 w-5 text-blue-600 focus:ring-blue-500">
+                            <span class="text-gray-700">{{ answer.text }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Таймер и кнопка отправки -->
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-6 
+                            border-t border-gray-200">
+                    <div class="text-lg font-medium text-gray-600">
+                        Осталось времени: 
+                        <span id="timer" class="text-blue-600 font-mono">30:00</span>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full sm:w-auto py-3 px-8 bg-blue-600 text-white rounded-lg 
+                                   hover:bg-blue-700 transition-all font-medium shadow-lg 
+                                   hover:shadow-xl transform hover:-translate-y-0.5">
+                        Отправить ответы
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Улучшенный таймер
+    const timerElement = document.getElementById('timer');
+    let timeLeft = {{ test.time_limit }} * 60;
+    
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const timer = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = formatTime(timeLeft);
+        
+        if(timeLeft <= 0) {
+            clearInterval(timer);
+            document.querySelector('form').submit();
+        }
+    }, 1000);
+</script>
+{% endblock %}

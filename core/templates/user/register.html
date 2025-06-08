@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen relative">
+  <!-- Фоновое изображение -->
+  <div class="fixed inset-0 z-0">
+    <img 
+      src="https://images.pexels.com/photos/3882229/pexels-photo-3882229.jpeg" 
+      alt="Фон" 
+      class="w-full h-full object-cover object-center"
+    >
+    <div class="absolute inset-0 bg-black/30"></div>
+  </div>
+
+  <!-- Основной контент -->
+  <div class="relative z-10 min-h-screen flex items-center justify-center px-4 py-8">
+    <div class="w-full max-w-md backdrop-blur-sm bg-white/90 rounded-2xl shadow-xl overflow-hidden">
+      <!-- Шапка -->
+      <div class="bg-gradient-to-r from-indigo-600 to-blue-500 py-8 px-6 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+        <h1 class="text-2xl font-bold text-white mt-4">Регистрация</h1>
+        <p class="mt-2 text-blue-100 text-sm">Создайте новый аккаунт</p>
+      </div>
+
+      <!-- Форма -->
+      <div class="p-8">
+        <form class="space-y-6" method="post">
+          {% csrf_token %}
+
+          <!-- Поле: Электронная почта (исправлено) -->
+          <div>
+            <label for="id_email" class="block text-sm font-medium text-gray-700 mb-2">
+              Электронная почта
+            </label>
+            <input 
+              type="email"
+              name="email"
+              id="id_email" 
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+              autocomplete="email"
+            >
+          </div>
+
+          <!-- Остальные поля -->
+          <div>
+            <label for="id_username" class="block text-sm font-medium text-gray-700 mb-2">
+              Имя пользователя
+            </label>
+            <input 
+              type="text"
+              name="username"
+              id="id_username"
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+              autocomplete="username"
+            >
+          </div>
+
+          <div>
+            <label for="id_password1" class="block text-sm font-medium text-gray-700 mb-2">
+              Пароль
+            </label>
+            <input 
+              type="password"
+              name="password1"
+              id="id_password1"
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+              autocomplete="new-password"
+            >
+          </div>
+
+          <div>
+            <label for="id_password2" class="block text-sm font-medium text-gray-700 mb-2">
+              Подтверждение пароля
+            </label>
+            <input 
+              type="password"
+              name="password2"
+              id="id_password2"
+              class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+              autocomplete="new-password"
+            >
+          </div>
+
+          <!-- Кнопка -->
+          <button 
+            type="submit" 
+            class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors duration-200"
+          >
+            Зарегистрироваться
+          </button>
+
+          <!-- Ссылка на вход -->
+          <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600">
+              Уже есть аккаунт? 
+              <a href="{% url 'login' %}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                Войти
+              </a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+  }
+
+  input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    border-color: #6366f1;
+  }
+
+  @media (max-width: 640px) {
+    .p-8 {
+      padding: 1.5rem;
+    }
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('https://images.hdqwalls.com/download/horizon-zero-dawn-nature-mountains-trees-sky-4k-yj-3840x2160.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    @keyframes fade-in-down {
+        0% {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-down {
+        animation: fade-in-down 0.8s ease-out forwards;
+    }
+    
+    .lecture-image-container {
+        height: 12rem;
+        background-color: #f3f4f6;
+    }
+    
+    /* Анимация карточки */
+    .lecture-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .lecture-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Анимация для menu tap */
+    .menu-tap-link {
+        display: inline-block;
+        transition: transform 0.3s ease;
+    }
+    
+    .menu-tap-link:hover {
+        transform: translateX(5px);
+    }
+</style>
+
+<div class="container mx-auto px-4 py-8 animate-fade-in-down opacity-0">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-white">
+            <!-- Анимированная ссылка "menu tap" -->
+            <a href="{% url 'home' %}" class="menu-tap-link text-white hover:text-gray-300 transition-colors duration-300">
+                menu tap
+            </a> 
+            <!-- Серая надпись "Все лекции" -->
+            &gt; <span class="text-gray-300">Все лекции</span>
+        </h1>
+        {% if user.is_authenticated and user.is_staff %}
+            <a href="{% url 'add_lecture' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Добавить лекцию
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for lecture in lectures %}
+        <a href="{% url 'lecture_detail' lecture.id %}" class="lecture-card bg-white bg-opacity-90 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 block">
+            <!-- Блок изображения -->
+            <div class="lecture-image-container w-full overflow-hidden">
+                {% if lecture.image %}
+                    <img 
+                        src="{{ lecture.image.url }}" 
+                        alt="{{ lecture.title }}"
+                        class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    >
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <div class="bg-blue-100 w-24 h-24 rounded-full flex items-center justify-center">
+                            <span class="text-4xl font-bold text-blue-600">❤️</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="p-6">
+                <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full 
+                            {% if lecture.grade == '1-4' %}bg-green-100 text-green-800
+                            {% elif lecture.grade == '5-6' %}bg-blue-100 text-blue-800
+                            {% elif lecture.grade == '7-9' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-purple-100 text-purple-800{% endif %}">
+                    {{ lecture.get_grade_display }}
+                </span>
+
+                <h2 class="mt-2 text-xl font-bold text-gray-800">{{ lecture.title }}</h2>
+                <p class="mt-2 text-gray-600 line-clamp-2">{{ lecture.description }}</p>
+
+                <div class="mt-4 text-right">
+                    <span class="text-sm text-gray-500">
+                        {{ lecture.created_at|date:"d.m.Y" }}
+                    </span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <p class="text-white text-lg drop-shadow">Лекции не найдены</p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'add_lecture' %}" class="mt-4 inline-block text-blue-200 hover:text-blue-100">
+                Добавить первую лекцию
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <div class="mt-8 flex justify-center">
+        <nav class="flex items-center gap-2 bg-white bg-opacity-80 px-4 py-2 rounded-lg shadow">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 border rounded-lg hover:bg-gray-100">
+                Назад
+            </a>
+            {% endif %}
+            
+            <span class="px-4 py-2 text-gray-700">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 border rounded-lg hover:bg-gray-100">
+                Вперед
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

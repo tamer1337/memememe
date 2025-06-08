@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+
+    <a href="{% url 'statistics' %}" class="fixed top-12 left-12 z-1 text-black-600 hover:text-gray-900 transition-colors">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+    </a>
+
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Заголовок -->
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">Взвешенное среднее</h1>
+      <p class="text-gray-600">Введите числа и их веса, разделённые пробелами, для расчёта взвешенного среднего</p>
+    </div>
+
+    <!-- Поля ввода -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8 space-y-4">
+      <div>
+        <label for="data-input" class="block text-sm font-medium text-gray-700 mb-1">Значения</label>
+        <input 
+          type="text" 
+          id="data-input"
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+          placeholder="Пример: 1 2 3 4 5 6 7 8 9"
+          autocomplete="off">
+      </div>
+      
+      <div>
+        <label for="weights-input" class="block text-sm font-medium text-gray-700 mb-1">Веса</label>
+        <input 
+          type="text" 
+          id="weights-input"
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition duration-200"
+          placeholder="Пример: 1 2 3 4 5 6 7 8 9"
+          autocomplete="off">
+      </div>
+      
+      <p class="text-sm text-gray-500 mt-2">Разделяйте числа пробелами. Количество значений и весов должно совпадать.</p>
+    </div>
+
+    <!-- Результаты -->
+    <div id="results" class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Результаты расчёта</h2>
+      
+      <div class="grid grid-cols-1 gap-6">
+        <!-- Основные показатели -->
+        <div class="space-y-3">
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Взвешенное среднее (Weighted Mean)</p>
+            <p id="weighted-mean" class="text-2xl font-medium">-</p>
+          </div>
+          
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Сумма весов</p>
+            <p id="sum-weights" class="text-xl font-medium">-</p>
+          </div>
+          
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <p class="text-sm text-gray-500">Сумма произведений (значение × вес)</p>
+            <p id="sum-products" class="text-xl font-medium">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Пояснения к показателям -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Пояснения к показателям</h2>
+      
+      <div class="space-y-6">
+        <!-- Взвешенное среднее -->
+        <div>
+          <h3 class="font-medium text-lg text-blue-600 mb-2">Взвешенное среднее (Weighted Mean)</h3>
+          <p class="text-gray-700 mb-1">Среднее значение, где каждому элементу присвоен определённый вес, влияющий на его важность в расчёте.</p>
+          <p class="text-sm bg-gray-100 p-2 rounded font-mono">x̄ = Σ(xᵢ × wᵢ) / Σwᵢ</p>
+          <p class="text-gray-600 text-sm mt-1">Где xᵢ - значения, wᵢ - веса, Σ - сумма</p>
+          
+          <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
+            <h4 class="font-medium text-md text-yellow-700 mb-2">Пример:</h4>
+            <p class="text-gray-700 mb-1">Значения: 1 2 3 4 5 6 7 8 9</p>
+            <p class="text-gray-700 mb-1">Веса: 1 2 3 4 5 6 7 8 9</p>
+            <p class="text-gray-700 mb-1">Числитель: 1×1 + 2×2 + ... + 9×9 = 285</p>
+            <p class="text-gray-700 mb-1">Знаменатель: 1 + 2 + ... + 9 = 45</p>
+            <p class="text-gray-700 font-medium">Результат: 285 / 45 ≈ 6.333</p>
+          </div>
+        </div>
+
+        <!-- Где используется -->
+        <div>
+          <h3 class="font-medium text-lg text-green-600 mb-2">Где используется взвешенное среднее?</h3>
+          <ul class="list-disc pl-5 text-gray-700 space-y-1">
+            <li>При расчёте среднего балла, где разные предметы имеют разный "вес"</li>
+            <li>В экономике для расчёта индексов (например, индекса потребительских цен)</li>
+            <li>В финансах для расчёта средней цены акций с учётом их количества</li>
+            <li>В статистике для обработки данных с разной достоверностью</li>
+            <li>В опросах, где ответы разных групп имеют разную значимость</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('data-input').addEventListener('input', calculateWeightedMean);
+document.getElementById('weights-input').addEventListener('input', calculateWeightedMean);
+
+function calculateWeightedMean() {
+  const dataInput = document.getElementById('data-input').value.trim();
+  const weightsInput = document.getElementById('weights-input').value.trim();
+  
+  const dataValues = dataInput.split(/\s+/).map(num => parseFloat(num)).filter(num => !isNaN(num));
+  const weightValues = weightsInput.split(/\s+/).map(num => parseFloat(num)).filter(num => !isNaN(num));
+  
+  // Проверяем, что количество значений и весов совпадает
+  if (dataValues.length === 0 || weightValues.length === 0 || dataValues.length !== weightValues.length) {
+    clearResults();
+    return;
+  }
+  
+  // Вычисляем сумму произведений
+  let sumProducts = 0;
+  for (let i = 0; i < dataValues.length; i++) {
+    sumProducts += dataValues[i] * weightValues[i];
+  }
+  
+  // Вычисляем сумму весов
+  const sumWeights = weightValues.reduce((a, b) => a + b, 0);
+  
+  // Вычисляем взвешенное среднее
+  const weightedMean = sumProducts / sumWeights;
+  
+  // Обновляем результаты
+  document.getElementById('weighted-mean').textContent = weightedMean.toFixed(4);
+  document.getElementById('sum-weights').textContent = sumWeights;
+  document.getElementById('sum-products').textContent = sumProducts;
+}
+
+function clearResults() {
+  document.getElementById('weighted-mean').textContent = '-';
+  document.getElementById('sum-weights').textContent = '-';
+  document.getElementById('sum-products').textContent = '-';
+}
+</script>
+{% endblock %}

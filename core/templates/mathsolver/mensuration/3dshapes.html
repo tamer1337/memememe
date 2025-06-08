@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">Geometric Shapes Properties</h1>
+  
+  <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shape</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lateral Surface Area</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Surface Area</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <!-- Cube -->
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Cube</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">V = a³</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">LSA = 4a²</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">TSA = 6a²</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+          </td>
+        </tr>
+
+        <!-- Cuboid -->
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Cuboid</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">V = l × w × h</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">LSA = 2h(l + w)</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">TSA = 2(lw + lh + wh)</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+          </td>
+        </tr>
+
+        <!-- Sphere -->
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Sphere</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">V = (4/3)πr³</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">LSA = 4πr²</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">TSA = 4πr²</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+          </td>
+        </tr>
+
+        <!-- Hemisphere -->
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Hemisphere</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">V = (2/3)πr³</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">LSA = 2πr²</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">TSA = 3πr²</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+          </td>
+        </tr>
+
+        <!-- Cylinder -->
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Cylinder</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">V = πr²h</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">LSA = 2πrh</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">TSA = 2πr(r + h)</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+          </td>
+        </tr>
+
+        <!-- Cone -->
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Cone</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">V = (1/3)πr²h</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">LSA = πrl</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">TSA = πr(r + l)</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+          </td>
+        </tr>
+
+        <!-- Frustum -->
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Frustum</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">V = (1/3)πh(R² + Rr + r²)</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">LSA = πl(R + r)</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">TSA = π[R² + r² + l(R + r)]</td>
+          <td class="px-6 py-4 whitespace-nowrap">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <a href="{% url 'mensuration' %}" 
+   class="fixed top-12 left-12 text-black hover:text-gray-700 transition-colors">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+</a>
+
+  <div class="mt-8 bg-gray-50 p-4 rounded-lg">
+    <h3 class="font-medium text-gray-800 mb-2">Legend:</h3>
+    <ul class="text-gray-600 text-sm space-y-1">
+      <li><span class="font-medium">a</span> = side length (cube)</li>
+      <li><span class="font-medium">l, w, h</span> = length, width, height (cuboid)</li>
+      <li><span class="font-medium">r</span> = radius</li>
+      <li><span class="font-medium">h</span> = height</li>
+      <li><span class="font-medium">l</span> = slant height (cone/frustum)</li>
+      <li><span class="font-medium">R, r</span> = top and bottom radii (frustum)</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

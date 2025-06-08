@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="position: fixed; top: 0; left: 0; width: 100%; min-height: 100vh; height: auto; background: url('https://th.bing.com/th/id/R.34fb44e2ecedad48e98342910d01d0f7?rik=%2b1Ne24slg1cRTg&riu=http%3a%2f%2fwww.pixelstalk.net%2fwp-content%2fuploads%2f2016%2f05%2fCherry-blossom-tree-wallpapers-flowers.jpg&ehk=7Noc7yw5%2bl1YLhuYFkkzszu%2b0fXJyS2xYHO7BvytebA%3d&risl=&pid=ImgRaw&r=0') center/cover no-repeat; z-index: -1;"></div>
+
+<div class="relative z-10 py-12 px-4">
+    <div class="max-w-6xl mx-auto text-center bg-white bg-opacity-90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl animate-fade-in-down opacity-0">
+        <h1 class="text-4xl font-bold text-blue-800 mb-4 transform hover:scale-105 transition duration-300">
+            Web-приложение для решения математических задач
+        </h1>
+        <p class="text-xl text-gray-600 mb-12 italic">Комплексная платформа для изучения математики</p>
+
+        <div class="relative mb-16">
+            <a href="{% url 'profile' %}" class="block mx-auto w-64 h-64 rounded-full overflow-hidden border-4 border-blue-500 shadow-xl hover:border-purple-500 transition-all duration-500 hover:rotate-12"> <img src="https://img.freepik.com/premium-vector/math-tutoring-education-logo-design-template_76712-699.jpg" alt="Математик" class="w-full h-full object-cover hover:scale-110 transition duration-500"></a>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 px-4">
+
+                <a href="{% url 'lectures_list' %}" class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:translate-x-1 border-2 border-transparent hover:border-blue-200 motion-safe:hover:animate-float">
+                    <div class="bg-gradient-to-br from-blue-100 to-blue-50 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <span class="text-blue-600 text-2xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-blue-700 mb-2">Лекционный материал</h3>
+                    <p class="text-gray-600">Теоретические материалы по всем темам школьной программы</p>
+                </a>
+
+                <a href="{% url 'exercise' %}" class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:-translate-x-1 border-2 border-transparent hover:border-green-200 motion-safe:hover:animate-float">
+                    <div class="bg-gradient-to-br from-green-100 to-green-50 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <span class="text-green-600 text-2xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-green-700 mb-2">Упражнения</h3>
+                    <p class="text-gray-600">Практические задания для закрепления материала</p>
+                </a>
+
+                <a href="{% url 'test_list' %}" class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:translate-x-1 border-2 border-transparent hover:border-purple-200 motion-safe:hover:animate-float">
+                    <div class="bg-gradient-to-br from-purple-100 to-purple-50 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <span class="text-purple-600 text-2xl font-bold">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-purple-700 mb-2">Тестирование</h3>
+                    <p class="text-gray-600">Проверьте свои знания с помощью интерактивных тестов</p>
+                </a>
+
+                <a href="{% url 'video_lectures' %}" class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:-translate-x-1 border-2 border-transparent hover:border-red-200 motion-safe:hover:animate-float">
+                    <div class="bg-gradient-to-br from-red-100 to-red-50 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <span class="text-red-600 text-2xl font-bold">4</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-red-700 mb-2">Видеоуроки</h3>
+                    <p class="text-gray-600">Наглядные объяснения сложных тем в видеоформате</p>
+                </a>
+
+                <a href="{% url 'presentation-list' %}" class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:translate-x-1 border-2 border-transparent hover:border-yellow-200 motion-safe:hover:animate-float">
+                    <div class="bg-gradient-to-br from-yellow-100 to-yellow-50 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <span class="text-yellow-600 text-2xl font-bold">5</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-yellow-700 mb-2">Презентации</h3>
+                    <p class="text-gray-600">Наглядные презентации для лучшего усвоения материала</p>
+                </a>
+
+                <a href="{% url 'dictionary-list' %}" class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:translate-x-1 border-2 border-transparent hover:border-indigo-200 motion-safe:hover:animate-float">
+                    <div class="bg-gradient-to-br from-indigo-100 to-indigo-50 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <span class="text-indigo-600 text-2xl font-bold">6</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-indigo-700 mb-2">Словарь</h3>
+                    <p class="text-gray-600">Математические термины и понятия с объяснениями</p>
+                </a>
+
+                <a href="{% url 'math_solver_base' %}" class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:translate-x-1 border-2 border-transparent hover:border-teal-200 motion-safe:hover:animate-float">
+                    <div class="bg-gradient-to-br from-teal-100 to-teal-50 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <span class="text-teal-600 text-2xl font-bold">7</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-teal-700 mb-2">Math Solver</h3>
+                    <p class="text-gray-600">Общая тематика</p>
+                </a>
+
+                <a href="{% url 'grind_main' %}" class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:translate-x-1 border-2 border-transparent hover:border-orange-200 motion-safe:hover:animate-float">
+                    <div class="bg-gradient-to-br from-orange-100 to-orange-50 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <span class="text-orange-600 text-2xl font-bold">8</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-orange-700 mb-2">Grind</h3>
+                    <p class="text-gray-600">Интенсивная практика</p>
+                </a>
+
+                <a href="{% url 'chat' %}" class="block bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:-translate-x-1 border-2 border-transparent hover:border-pink-200 motion-safe:hover:animate-float">
+                    <div class="bg-gradient-to-br from-pink-100 to-pink-50 w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <span class="text-pink-600 text-2xl font-bold">9</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-pink-700 mb-2">Чат</h3>
+                    <p class="text-gray-600">Общайтесь с другими пользователями</p>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes float {
+        0% {
+            transform: translateY(0) translateX(0);
+        }
+        50% {
+            transform: translateY(-5px) translateX(3px);
+        }
+        100% {
+            transform: translateY(0) translateX(0);
+        }
+    }
+    .animate-float {
+        animation: float 2s ease-in-out infinite;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <h1 class="text-3xl font-bold pb-10"><a href="{% url 'presentation-list' %}" class="hover:text-gray-300 transition-colors duration-300">Все презентации</a> > Содержание презентации</h1>
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="p-6 bg-gray-50 border-b">
+            <h1 class="text-2xl font-bold">{{ presentation.title }}</h1>
+            <div class="mt-2 text-sm text-gray-600">
+                <span>Автор: {{ presentation.author }}</span>
+                <span class="mx-2">|</span>
+                <span>Добавлено: {{ presentation.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+            {% if presentation.description %}
+            <p class="mt-4 text-gray-800">{{ presentation.description }}</p>
+            {% endif %}
+        </div>
+        
+        <iframe src="{{ presentation.file.url }}" 
+                class="w-full h-screen" 
+                style="min-height: 75vh"
+                title="PDF презентация">
+        </iframe>
+    </div>
+</div>
+{% endblock %}

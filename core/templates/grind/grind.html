@@ -1,0 +1,437 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="fixed inset-0 -z-10 bg-gradient-to-br from-indigo-900 via-red-700 to-indigo-900"></div>
+
+<div class="min-h-screen w-full flex flex-col items-center justify-center text-white px-4 py-10 relative">
+    <!-- Кнопка "На главную" -->
+    <a href="{% url 'home' %}" class="fixed top-6 left-6 z-50">
+        <button class="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm transition-all border border-white/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            На главную
+        </button>
+    </a>
+
+    <!-- Основной контейнер -->
+    <div class="w-full max-w-4xl space-y-8 backdrop-blur-sm bg-white/10 rounded-xl p-6 shadow-2xl">
+        <!-- Заголовок -->
+        <header class="text-center">
+            <h1 class="text-4xl font-bold flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Накопление баллов
+            </h1>
+            <p class="text-lg mt-2 opacity-90">Зарабатывайте баллы и улучшайте свои возможности</p>
+        </header>
+
+        <!-- Текущие баллы -->
+        <div class="flex items-center justify-center gap-4 text-3xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            <span id="points" class="font-bold">0</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+        </div>
+
+        <!-- Кнопки набора баллов -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Медленная кнопка -->
+            <div class="bg-white/5 p-6 rounded-2xl shadow-lg border border-white/10">
+                <h2 class="text-xl font-semibold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                    </svg>
+                    Медленная кнопка
+                </h2>
+                <p class="mt-2 text-gray-200">Нажмите, чтобы получить 1 балл. Доступно каждые 15 минут.</p>
+                <button id="slowBtn" class="mt-4 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition-all w-full">
+                    Получить 1 балл
+                </button>
+                <div id="timer" class="mt-2 text-sm font-mono text-green-400">Доступно сейчас!</div>
+            </div>
+
+            <!-- Быстрая кнопка -->
+            <div class="bg-white/5 p-6 rounded-2xl shadow-lg border border-white/10">
+                <h2 class="text-xl font-semibold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                    </svg>
+                    Быстрая кнопка
+                </h2>
+                <p class="mt-2 text-gray-200">Нажмите, чтобы получить <span id="pointsPerClick">5</span> баллов. Доступно <span id="clicksLeft">100</span> раз в день.</p>
+                <button id="fastBtn" class="mt-4 px-6 py-3 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50 transition-all w-full">
+                    Получить <span id="fastBtnPoints">5</span> баллов
+                </button>
+            </div>
+        </div>
+
+        <!-- Прогресс-бар -->
+        <div class="bg-white/5 p-6 rounded-2xl shadow-lg border border-white/10">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-medium flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 001.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    Осталось нажатий
+                </h3>
+                <span id="progressText" class="font-mono">100/100</span>
+            </div>
+            <div class="w-full bg-white/20 h-4 rounded-full overflow-hidden">
+                <div id="progressFill" class="bg-green-400 h-full text-xs text-center text-black font-bold transition-all duration-300" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <!-- Улучшение -->
+        <div class="bg-white/5 p-6 rounded-2xl shadow-lg border border-white/10">
+            <div class="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+                </svg>
+                <h2 class="text-xl font-bold">Улучшение кнопки</h2>
+            </div>
+            <p class="mt-2 text-gray-200">Улучшите быструю кнопку за 1000 баллов. После улучшения кнопка будет давать от 5 до 10 баллов за нажатие!</p>
+            <div class="flex items-center gap-2 text-sm mt-3 text-yellow-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
+                </svg>
+                <span>Стоимость: 1000 баллов</span>
+            </div>
+            <button id="upgradeBtn" class="mt-4 px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50 transition-all w-full">
+                Улучшить
+            </button>
+        </div>
+
+        <!-- Статистика -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+            <div class="bg-white/5 p-4 rounded-2xl shadow-md border border-white/10">
+                <h4 class="text-lg font-semibold">Всего набрано баллов</h4>
+                <div id="totalPoints" class="text-2xl mt-1 font-mono">0</div>
+            </div>
+            <div class="bg-white/5 p-4 rounded-2xl shadow-md border border-white/10">
+                <h4 class="text-lg font-semibold">Купили улучшение</h4>
+                <div id="upgradeStatus" class="text-2xl mt-1 font-mono">Нет</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомление -->
+    <div id="notification" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-xl hidden animate-bounce">
+        <p class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span id="notificationMessage">Баллы успешно начислены!</span>
+        </p>
+    </div>
+</div>
+
+<script>
+    // Конфигурация
+    const CONFIG = {
+        SLOW_CLICK_COOLDOWN: 15 * 60 * 1000, // 15 минут в миллисекундах
+        FAST_CLICK_BASE: 5,
+        FAST_CLICK_UPGRADED_MIN: 5,
+        FAST_CLICK_UPGRADED_MAX: 10,
+        UPGRADE_COST: 1000,
+        NOTIFICATION_DURATION: 3000
+    };
+
+    // Состояние приложения
+    const state = {
+        points: 0,
+        totalPoints: 0,
+        slowBtnLastClick: 0,
+        fastBtnClicks: 0,
+        maxFastClicks: 100,
+        isUpgraded: false,
+        timerInterval: null
+    };
+
+    // DOM элементы
+    const elements = {
+        points: document.getElementById('points'),
+        totalPoints: document.getElementById('totalPoints'),
+        slowBtn: document.getElementById('slowBtn'),
+        fastBtn: document.getElementById('fastBtn'),
+        timer: document.getElementById('timer'),
+        clicksLeft: document.getElementById('clicksLeft'),
+        progressText: document.getElementById('progressText'),
+        progressFill: document.getElementById('progressFill'),
+        upgradeBtn: document.getElementById('upgradeBtn'),
+        upgradeStatus: document.getElementById('upgradeStatus'),
+        notification: document.getElementById('notification'),
+        notificationMessage: document.getElementById('notificationMessage'),
+        pointsPerClick: document.getElementById('pointsPerClick'),
+        fastBtnPoints: document.getElementById('fastBtnPoints')
+    };
+
+    // Инициализация приложения
+    document.addEventListener('DOMContentLoaded', () => {
+        // Получение CSRF токена
+        window.csrftoken = getCookie('csrftoken');
+        
+        // Назначение обработчиков событий
+        elements.slowBtn.addEventListener('click', handleSlowClick);
+        elements.fastBtn.addEventListener('click', handleFastClick);
+        elements.upgradeBtn.addEventListener('click', handleUpgrade);
+        
+        // Загрузка начального состояния
+        loadState();
+    });
+
+async function loadState() {
+    try {
+        const response = await fetch('/grind/points-state/');
+        
+        // Обработка HTTP ошибок
+        if (!response.ok) {
+            let errorText;
+            try {
+                const errorData = await response.json();
+                errorText = errorData.error || 'Ошибка сервера';
+            } catch (e) {
+                errorText = await response.text() || 'Ошибка сети';
+            }
+            throw new Error(errorText);
+        }
+        
+        const data = await response.json();
+        
+        // Обновляем состояние
+        state.points = data.points;
+        state.totalPoints = data.total_points;
+        state.fastBtnClicks = data.fast_clicks_today;
+        state.isUpgraded = data.is_upgraded;
+        state.maxFastClicks = data.daily_limit;
+        
+        // Устанавливаем время последнего клика
+        if (data.slow_cooldown > 0) {
+            state.slowBtnLastClick = Date.now() - (CONFIG.SLOW_CLICK_COOLDOWN - data.slow_cooldown * 1000);
+        } else {
+            state.slowBtnLastClick = 0;
+        }
+        
+        updateUI();
+        startTimer();
+    } catch (error) {
+        console.error('Ошибка загрузки состояния:', error);
+        showNotification(error.message || 'Ошибка загрузки данных', 'error');
+    }
+}
+
+async function handleSlowClick() {
+    try {
+        // Блокируем кнопку на время запроса
+        elements.slowBtn.disabled = true;
+        
+        const response = await fetch('/grind/slow-click/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Обрабатываем HTTP ошибки
+        if (!response.ok) {
+            let errorText;
+            try {
+                const errorData = await response.json();
+                errorText = errorData.error || 'Ошибка сервера';
+            } catch (e) {
+                errorText = await response.text() || 'Ошибка сети';
+            }
+            throw new Error(errorText);
+        }
+        
+        const data = await response.json();
+        
+        // Обрабатываем логические ошибки от сервера
+        if (!data.success) {
+            showNotification(data.message || 'Не удалось выполнить действие', 'error');
+            return;
+        }
+        
+        // Обновляем состояние при успехе
+        state.points = data.points;
+        state.totalPoints = data.total_points;
+        // Используем cooldown от сервера для установки времени последнего клика
+        state.slowBtnLastClick = Date.now() - (CONFIG.SLOW_CLICK_COOLDOWN - data.cooldown);
+        
+        updateUI();
+        startTimer();
+        showNotification("Получен 1 балл!");
+    } catch (error) {
+        console.error('Ошибка медленного клика:', error);
+        showNotification(error.message || 'Ошибка соединения', 'error');
+    } finally {
+        elements.slowBtn.disabled = false;
+    }
+}
+
+    async function handleFastClick() {
+    try {
+        elements.fastBtn.disabled = true;
+        const response = await fetch('/grind/fast-click/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Обработка HTTP ошибок
+        if (!response.ok) {
+            let errorText;
+            try {
+                const errorData = await response.json();
+                errorText = errorData.error || 'Ошибка сервера';
+            } catch (e) {
+                errorText = await response.text() || 'Ошибка сети';
+            }
+            throw new Error(errorText);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            state.points = data.points;
+            state.totalPoints = data.total_points;
+            state.fastBtnClicks = data.fast_clicks_today;
+            updateUI();
+            showNotification(`Получено ${data.amount} баллов!`);
+        } else {
+            showNotification(data.message || 'Не удалось выполнить действие', 'error');
+        }
+    } catch (error) {
+        console.error('Ошибка быстрого клика:', error);
+        showNotification(error.message || 'Ошибка соединения', 'error');
+    } finally {
+        elements.fastBtn.disabled = false;
+    }
+}
+
+    async function handleUpgrade() {
+        try {
+            elements.upgradeBtn.disabled = true;
+            const response = await fetch('/grind/upgrade/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                state.points = data.points;
+                state.isUpgraded = data.is_upgraded;
+                updateUI();
+                showNotification("Улучшение куплено!");
+            } else {
+                showNotification(data.message || 'Не удалось выполнить улучшение', 'error');
+            }
+        } catch (error) {
+            console.error('Ошибка улучшения:', error);
+            showNotification('Ошибка соединения', 'error');
+        } finally {
+            elements.upgradeBtn.disabled = false;
+        }
+    }
+
+    // Функции обновления интерфейса
+    function updateUI() {
+        // Обновляем баллы
+        elements.points.textContent = state.points;
+        elements.totalPoints.textContent = state.totalPoints;
+
+        // Обновляем быстрые клики
+        const fastClicksLeft = state.maxFastClicks - state.fastBtnClicks;
+        elements.clicksLeft.textContent = state.maxFastClicks;
+        elements.fastBtn.disabled = fastClicksLeft <= 0;
+
+        // Обновляем прогресс-бар
+        const progressPercent = (fastClicksLeft / state.maxFastClicks) * 100;
+        elements.progressFill.style.width = `${progressPercent}%`;
+        elements.progressFill.textContent = `${Math.round(progressPercent)}%`;
+        elements.progressText.textContent = `${fastClicksLeft}/${state.maxFastClicks}`;
+
+        // Обновляем кнопку улучшения
+        elements.upgradeBtn.disabled = state.points < CONFIG.UPGRADE_COST || state.isUpgraded;
+        elements.upgradeStatus.textContent = state.isUpgraded ? "Да" : "Нет";
+
+        // Обновляем информацию о кликах
+        if (state.isUpgraded) {
+            elements.pointsPerClick.textContent = `${CONFIG.FAST_CLICK_UPGRADED_MIN}-${CONFIG.FAST_CLICK_UPGRADED_MAX}`;
+            elements.fastBtnPoints.textContent = `${CONFIG.FAST_CLICK_UPGRADED_MIN}-${CONFIG.FAST_CLICK_UPGRADED_MAX}`;
+        } else {
+            elements.pointsPerClick.textContent = CONFIG.FAST_CLICK_BASE;
+            elements.fastBtnPoints.textContent = CONFIG.FAST_CLICK_BASE;
+        }
+    }
+
+    function startTimer() {
+        // Очищаем предыдущий таймер
+        if (state.timerInterval) {
+            clearInterval(state.timerInterval);
+        }
+        
+        // Запускаем новый таймер
+        state.timerInterval = setInterval(() => {
+            const elapsed = Date.now() - state.slowBtnLastClick;
+            const remaining = CONFIG.SLOW_CLICK_COOLDOWN - elapsed;
+            
+            if (remaining <= 0) {
+                // Таймер истек
+                elements.timer.textContent = "Доступно сейчас!";
+                elements.timer.className = "mt-2 text-sm font-mono text-green-400";
+                elements.slowBtn.disabled = false;
+                clearInterval(state.timerInterval);
+            } else {
+                // Обновляем таймер
+                const mins = Math.floor(remaining / 60000);
+                const secs = Math.floor((remaining % 60000) / 1000);
+                elements.timer.textContent = `Доступно через: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                elements.timer.className = "mt-2 text-sm font-mono text-yellow-400";
+                elements.slowBtn.disabled = true;
+            }
+        }, 1000);
+    }
+
+    function showNotification(message, type = 'success') {
+        elements.notificationMessage.textContent = message;
+        
+        // Устанавливаем цвет в зависимости от типа уведомления
+        if (type === 'success') {
+            elements.notification.className = "fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 animate-bounce";
+        } else {
+            elements.notification.className = "fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 animate-bounce";
+        }
+        
+        elements.notification.classList.remove('hidden');
+        
+        // Автоматическое скрытие уведомления
+        setTimeout(() => {
+            elements.notification.classList.add('hidden');
+        }, CONFIG.NOTIFICATION_DURATION);
+    }
+
+    // Вспомогательная функция для получения cookie
+    function getCookie(name) {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(`${name}=`))
+            ?.split('=')[1];
+        
+        return cookieValue ? decodeURIComponent(cookieValue) : null;
+    }
+</script>
+{% endblock %}
