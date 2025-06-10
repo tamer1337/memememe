@@ -24,11 +24,12 @@ SECRET_KEY = 'django-insecure-j$40k@j1#(y3psiy#-a_ch)#bsf^0enn408$os72e!n^uv1((m
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'https://memememe.onrender.com']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://web-production-21cf.up.railway.app',
-    'https://*.railway.app'
+    'https://*.railway.app',
+    'https://memememe.onrender.com'
 ]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
