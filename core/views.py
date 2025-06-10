@@ -853,100 +853,28 @@ class DeleteWordView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from .models import UserPoints, PointHistory, ChatMessage
-from django.utils import timezone
-from datetime import timedelta
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from .models import UserPoints, PointHistory, ChatMessage
-from django.utils import timezone
-from datetime import timedelta
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
-import json
-
-import json
-from django.utils import timezone
-from datetime import timedelta
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.html import escape
-
-# ===================== Utility Functions =====================
-def json_response(success=True, **kwargs):
-    """Универсальный JSON-ответ"""
-    response = {'success': success}
-    response.update(kwargs)
-    return JsonResponse(response)
-
-def json_error(message, status=400):
-    """Возвращает JSON с ошибкой"""
-    return json_response(success=False, error=message, status=status)
-
-from django.contrib import messages
-from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
-from django.utils import timezone
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_protect
-from django.utils.html import escape
-import json
-from datetime import timedelta
-
-from .models import UserPoints, ChatMessage
-from .forms import RegisterForm, LoginForm
-
-# ===================== Utility Functions =====================
-def json_response(success=True, **kwargs):
-    """Унифицированный JSON-ответ"""
-    response = {'success': success}
-    response.update(kwargs)
-    return JsonResponse(response)
-
-def json_error(message, status=400):
-    """JSON-ответ с ошибкой"""
-    return JsonResponse({'success': False, 'error': message}, status=status)
-
-from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from .models import ChatMessage, UserPoints, PointHistory
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from .models import UserPoints, PointHistory
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.db import transaction
 from datetime import timedelta
-import json
 import logging
-from django.db.models import Sum
+import json
 
 logger = logging.getLogger(__name__)
 
 def json_response(**kwargs):
-    """Утилита для создания JSON-ответов"""
     return JsonResponse({'status': 'success', **kwargs})
 
 def json_error(message, status=400):
-    """Утилита для создания JSON-ошибок"""
     return JsonResponse({'status': 'error', 'message': message}, status=status)
 
-# ===================== Grind Views =====================
 @login_required
 def grind_main(request):
-    """Основная страница Grind режима"""
     try:
         user_points = UserPoints.objects.get(user=request.user)
         context = {
@@ -961,7 +889,6 @@ def grind_main(request):
 
 @login_required
 def profile_view(request):
-    """Страница профиля пользователя"""
     try:
         user_points = UserPoints.objects.get(user=request.user)
         today = timezone.now().date()
@@ -984,16 +911,21 @@ def profile_view(request):
 @login_required
 @csrf_protect
 def get_points_state(request):
-    """Получение текущего состояния баллов (AJAX)"""
     try:
         user_points = UserPoints.objects.get(user=request.user)
+        
+        last_slow_click_timestamp = 0
+        if user_points.last_slow_click:
+            last_slow_click_timestamp = int(user_points.last_slow_click.timestamp() * 1000)
+        
         return json_response(
             points=user_points.points,
             total_points=user_points.total_points,
             fast_clicks_today=user_points.fast_clicks_today,
             is_upgraded=user_points.is_upgraded,
-            slow_cooldown=user_points.slow_click_cooldown.total_seconds(),
-            daily_limit=user_points.DAILY_FAST_CLICKS_LIMIT
+            last_slow_click_timestamp=last_slow_click_timestamp,
+            daily_limit=user_points.DAILY_FAST_CLICKS_LIMIT,
+            slow_cooldown_seconds = user_points.SLOW_CLICK_COOLDOWN.total_seconds()
         )
     except ObjectDoesNotExist:
         return json_error('Профиль баллов не найден', status=404)
@@ -1002,28 +934,29 @@ def get_points_state(request):
 @require_POST
 @csrf_protect
 def add_slow_click(request):
-    """Обработка медленного клика"""
     try:
         with transaction.atomic():
             user_points = UserPoints.objects.select_for_update().get(user=request.user)
             
-            if not user_points.can_make_slow_click:
-                remaining = user_points.slow_click_cooldown
-                mins = int(remaining.total_seconds() // 60)
-                secs = int(remaining.total_seconds() % 60)
-                return json_response(
-                    success=False,
-                    message=f'Подождите еще {mins} мин {secs} сек',
-                    cooldown=remaining.total_seconds()
-                )
+            if user_points.last_slow_click:
+                elapsed = timezone.now() - user_points.last_slow_click
+                if elapsed < user_points.SLOW_CLICK_COOLDOWN:
+                    remaining = user_points.SLOW_CLICK_COOLDOWN - elapsed
+                    return json_response(
+                        success=False,
+                        message='Кулдаун еще не прошел',
+                        cooldown=remaining.total_seconds()
+                    )
             
             user_points.make_slow_click()
+            new_timestamp = int(user_points.last_slow_click.timestamp() * 1000)
+            
             return json_response(
                 success=True,
                 points=user_points.points,
                 total_points=user_points.total_points,
-                cooldown=user_points.SLOW_CLICK_COOLDOWN.total_seconds(),
-                message='Медленный клик засчитан'
+                last_slow_click_timestamp=new_timestamp,
+                message='+1 балл'
             )
     except ObjectDoesNotExist:
         return json_error('Профиль баллов не найден', status=404)
@@ -1035,7 +968,6 @@ def add_slow_click(request):
 @require_POST
 @csrf_protect
 def add_fast_click(request):
-    """Обработка быстрого клика"""
     try:
         with transaction.atomic():
             user_points = UserPoints.objects.select_for_update().get(user=request.user)
@@ -1048,7 +980,7 @@ def add_fast_click(request):
                 amount=amount,
                 fast_clicks_today=user_points.fast_clicks_today,
                 remaining=user_points.DAILY_FAST_CLICKS_LIMIT - user_points.fast_clicks_today,
-                message=f'Быстрый клик: +{amount} очков' if success else 'Достигнут дневной лимит'
+                message=f'+{amount} баллов'
             )
     except ObjectDoesNotExist:
         return json_error('UserPoints не найден', status=404)
@@ -1059,7 +991,6 @@ def add_fast_click(request):
 @require_POST
 @csrf_protect
 def upgrade(request):
-    """Обработка улучшения аккаунта"""
     try:
         with transaction.atomic():
             user_points = UserPoints.objects.select_for_update().get(user=request.user)
@@ -1069,7 +1000,7 @@ def upgrade(request):
                 success=success,
                 points=user_points.points,
                 is_upgraded=user_points.is_upgraded,
-                message='Улучшение активировано!' if success else 'Недостаточно очков для улучшения'
+                message='Улучшение активировано!' if success else 'Недостаточно очков'
             )
     except ObjectDoesNotExist:
         return json_error('UserPoints не найден', status=404)
@@ -1204,3 +1135,13 @@ def online_users(request):
             'online_count': 0,
             'error': 'Ошибка сервера'
         }, status=500)
+
+
+
+# Конвертер
+
+
+from django.views.generic import TemplateView
+
+class ConverterView(TemplateView):
+    template_name = 'mathsolver/converter.html'

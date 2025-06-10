@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Конвертер величин</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="valueInput">Значение:</label>
+                <input type="number" class="form-control" id="valueInput" placeholder="Введите число">
+            </div>
+            
+            <div class="form-group">
+                <label for="fromUnit">Из:</label>
+                <select class="form-control" id="fromUnit">
+                    <option value="meter">Метры</option>
+                    <option value="kilometer">Километры</option>
+                    <option value="centimeter">Сантиметры</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="toUnit">В:</label>
+                <select class="form-control" id="toUnit">
+                    <option value="kilometer">Километры</option>
+                    <option value="meter">Метры</option>
+                    <option value="centimeter">Сантиметры</option>
+                </select>
+            </div>
+            
+            <button id="convertBtn" class="btn btn-primary">Конвертировать</button>
+        </div>
+        
+        <div class="col-md-6">
+            <h3>Результат:</h3>
+            <div id="result" class="alert alert-success" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('convertBtn').addEventListener('click', function() {
+    const value = parseFloat(document.getElementById('valueInput').value);
+    const fromUnit = document.getElementById('fromUnit').value;
+    const toUnit = document.getElementById('toUnit').value;
+    
+    if (isNaN(value)) {
+        alert("Пожалуйста, введите корректное число");
+        return;
+    }
+    
+    // Коэффициенты конвертации (метры как базовая единица)
+    const factors = {
+        meter: 1,
+        kilometer: 1000,
+        centimeter: 0.01
+    };
+    
+    // Конвертация через метры
+    const valueInMeters = value * factors[fromUnit];
+    const result = valueInMeters / factors[toUnit];
+    
+    const resultElement = document.getElementById('result');
+    resultElement.innerHTML = `${value} ${fromUnit} = ${result.toFixed(4)} ${toUnit}`;
+    resultElement.style.display = 'block';
+});
+</script>
+{% endblock %}

@@ -133,9 +133,8 @@
 </div>
 
 <script>
-    // Конфигурация
     const CONFIG = {
-        SLOW_CLICK_COOLDOWN: 15 * 60 * 1000, // 15 минут в миллисекундах
+        SLOW_CLICK_COOLDOWN: 15 * 60 * 1000,
         FAST_CLICK_BASE: 5,
         FAST_CLICK_UPGRADED_MIN: 5,
         FAST_CLICK_UPGRADED_MAX: 10,
@@ -143,7 +142,6 @@
         NOTIFICATION_DURATION: 3000
     };
 
-    // Состояние приложения
     const state = {
         points: 0,
         totalPoints: 0,
@@ -151,10 +149,10 @@
         fastBtnClicks: 0,
         maxFastClicks: 100,
         isUpgraded: false,
-        timerInterval: null
+        timerInterval: null,
+        isSlowClickPending: false
     };
 
-    // DOM элементы
     const elements = {
         points: document.getElementById('points'),
         totalPoints: document.getElementById('totalPoints'),
@@ -172,155 +170,112 @@
         fastBtnPoints: document.getElementById('fastBtnPoints')
     };
 
-    // Инициализация приложения
     document.addEventListener('DOMContentLoaded', () => {
-        // Получение CSRF токена
         window.csrftoken = getCookie('csrftoken');
-        
-        // Назначение обработчиков событий
         elements.slowBtn.addEventListener('click', handleSlowClick);
         elements.fastBtn.addEventListener('click', handleFastClick);
         elements.upgradeBtn.addEventListener('click', handleUpgrade);
-        
-        // Загрузка начального состояния
         loadState();
     });
 
-async function loadState() {
-    try {
-        const response = await fetch('/grind/points-state/');
-        
-        // Обработка HTTP ошибок
-        if (!response.ok) {
-            let errorText;
-            try {
-                const errorData = await response.json();
-                errorText = errorData.error || 'Ошибка сервера';
-            } catch (e) {
-                errorText = await response.text() || 'Ошибка сети';
-            }
-            throw new Error(errorText);
-        }
-        
-        const data = await response.json();
-        
-        // Обновляем состояние
-        state.points = data.points;
-        state.totalPoints = data.total_points;
-        state.fastBtnClicks = data.fast_clicks_today;
-        state.isUpgraded = data.is_upgraded;
-        state.maxFastClicks = data.daily_limit;
-        
-        // Устанавливаем время последнего клика
-        if (data.slow_cooldown > 0) {
-            state.slowBtnLastClick = Date.now() - (CONFIG.SLOW_CLICK_COOLDOWN - data.slow_cooldown * 1000);
-        } else {
-            state.slowBtnLastClick = 0;
-        }
-        
-        updateUI();
-        startTimer();
-    } catch (error) {
-        console.error('Ошибка загрузки состояния:', error);
-        showNotification(error.message || 'Ошибка загрузки данных', 'error');
-    }
-}
+    async function loadState() {
+        try {
+            const response = await fetch('/grind/points-state/');
+            if (!response.ok) throw new Error('Ошибка сервера');
+            
+            const data = await response.json();
+            state.points = data.points;
+            state.totalPoints = data.total_points;
+            state.fastBtnClicks = data.fast_clicks_today;
+            state.isUpgraded = data.is_upgraded;
+            state.maxFastClicks = data.daily_limit;
 
-async function handleSlowClick() {
-    try {
-        // Блокируем кнопку на время запроса
-        elements.slowBtn.disabled = true;
-        
-        const response = await fetch('/grind/slow-click/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrftoken,
-                'Content-Type': 'application/json'
+            // Устанавливаем время последнего клика с сервера
+            if (data.last_slow_click_timestamp) {
+                state.slowBtnLastClick = data.last_slow_click_timestamp;
+                localStorage.setItem('slowBtnLastClick', state.slowBtnLastClick.toString());
+            } else {
+                const saved = localStorage.getItem('slowBtnLastClick');
+                if (saved) state.slowBtnLastClick = parseInt(saved);
             }
-        });
-        
-        // Обрабатываем HTTP ошибки
-        if (!response.ok) {
-            let errorText;
-            try {
-                const errorData = await response.json();
-                errorText = errorData.error || 'Ошибка сервера';
-            } catch (e) {
-                errorText = await response.text() || 'Ошибка сети';
-            }
-            throw new Error(errorText);
+
+            updateUI();
+            startTimer();
+        } catch (error) {
+            showNotification(error.message, 'error');
         }
-        
-        const data = await response.json();
-        
-        // Обрабатываем логические ошибки от сервера
-        if (!data.success) {
-            showNotification(data.message || 'Не удалось выполнить действие', 'error');
-            return;
-        }
-        
-        // Обновляем состояние при успехе
-        state.points = data.points;
-        state.totalPoints = data.total_points;
-        // Используем cooldown от сервера для установки времени последнего клика
-        state.slowBtnLastClick = Date.now() - (CONFIG.SLOW_CLICK_COOLDOWN - data.cooldown);
-        
-        updateUI();
-        startTimer();
-        showNotification("Получен 1 балл!");
-    } catch (error) {
-        console.error('Ошибка медленного клика:', error);
-        showNotification(error.message || 'Ошибка соединения', 'error');
-    } finally {
-        elements.slowBtn.disabled = false;
     }
-}
+
+    async function handleSlowClick() {
+        // Блокируем кнопку и устанавливаем флаг ожидания
+        elements.slowBtn.disabled = true;
+        state.isSlowClickPending = true;
+        
+        try {
+            const response = await fetch('/grind/slow-click/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) throw new Error('Ошибка сервера');
+            
+            const data = await response.json();
+            if (!data.success) throw new Error(data.message || 'Ошибка');
+
+            // Обновляем состояние после успешного запроса
+            state.points = data.points;
+            state.totalPoints = data.total_points;
+            
+            if (data.last_slow_click_timestamp) {
+                state.slowBtnLastClick = data.last_slow_click_timestamp;
+                localStorage.setItem('slowBtnLastClick', data.last_slow_click_timestamp.toString());
+            }
+
+            updateUI();
+            startTimer();
+            showNotification(data.message || "Получен 1 балл!");
+        } catch (error) {
+            showNotification(error.message || 'Ошибка соединения', 'error');
+        } finally {
+            state.isSlowClickPending = false;
+            // Кнопка будет разблокирована таймером
+        }
+    }
 
     async function handleFastClick() {
-    try {
         elements.fastBtn.disabled = true;
-        const response = await fetch('/grind/fast-click/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrftoken,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        // Обработка HTTP ошибок
-        if (!response.ok) {
-            let errorText;
-            try {
-                const errorData = await response.json();
-                errorText = errorData.error || 'Ошибка сервера';
-            } catch (e) {
-                errorText = await response.text() || 'Ошибка сети';
-            }
-            throw new Error(errorText);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success) {
+        try {
+            const response = await fetch('/grind/fast-click/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) throw new Error('Ошибка сервера');
+            
+            const data = await response.json();
+            if (!data.success) throw new Error(data.message || 'Ошибка');
+            
             state.points = data.points;
             state.totalPoints = data.total_points;
             state.fastBtnClicks = data.fast_clicks_today;
             updateUI();
-            showNotification(`Получено ${data.amount} баллов!`);
-        } else {
-            showNotification(data.message || 'Не удалось выполнить действие', 'error');
+            showNotification(data.message || `Получено ${data.amount} баллов!`);
+        } catch (error) {
+            showNotification(error.message || 'Ошибка соединения', 'error');
+        } finally {
+            elements.fastBtn.disabled = false;
         }
-    } catch (error) {
-        console.error('Ошибка быстрого клика:', error);
-        showNotification(error.message || 'Ошибка соединения', 'error');
-    } finally {
-        elements.fastBtn.disabled = false;
     }
-}
 
     async function handleUpgrade() {
+        elements.upgradeBtn.disabled = true;
         try {
-            elements.upgradeBtn.disabled = true;
             const response = await fetch('/grind/upgrade/', {
                 method: 'POST',
                 headers: {
@@ -330,45 +285,34 @@ async function handleSlowClick() {
             });
             
             const data = await response.json();
+            if (!data.success) throw new Error(data.message || 'Ошибка');
             
-            if (data.success) {
-                state.points = data.points;
-                state.isUpgraded = data.is_upgraded;
-                updateUI();
-                showNotification("Улучшение куплено!");
-            } else {
-                showNotification(data.message || 'Не удалось выполнить улучшение', 'error');
-            }
+            state.points = data.points;
+            state.isUpgraded = data.is_upgraded;
+            updateUI();
+            showNotification(data.message || "Улучшение куплено!");
         } catch (error) {
-            console.error('Ошибка улучшения:', error);
-            showNotification('Ошибка соединения', 'error');
+            showNotification(error.message || 'Ошибка соединения', 'error');
         } finally {
             elements.upgradeBtn.disabled = false;
         }
     }
 
-    // Функции обновления интерфейса
     function updateUI() {
-        // Обновляем баллы
         elements.points.textContent = state.points;
         elements.totalPoints.textContent = state.totalPoints;
 
-        // Обновляем быстрые клики
         const fastClicksLeft = state.maxFastClicks - state.fastBtnClicks;
-        elements.clicksLeft.textContent = state.maxFastClicks;
+        elements.clicksLeft.textContent = fastClicksLeft;
         elements.fastBtn.disabled = fastClicksLeft <= 0;
 
-        // Обновляем прогресс-бар
         const progressPercent = (fastClicksLeft / state.maxFastClicks) * 100;
         elements.progressFill.style.width = `${progressPercent}%`;
-        elements.progressFill.textContent = `${Math.round(progressPercent)}%`;
         elements.progressText.textContent = `${fastClicksLeft}/${state.maxFastClicks}`;
 
-        // Обновляем кнопку улучшения
         elements.upgradeBtn.disabled = state.points < CONFIG.UPGRADE_COST || state.isUpgraded;
         elements.upgradeStatus.textContent = state.isUpgraded ? "Да" : "Нет";
 
-        // Обновляем информацию о кликах
         if (state.isUpgraded) {
             elements.pointsPerClick.textContent = `${CONFIG.FAST_CLICK_UPGRADED_MIN}-${CONFIG.FAST_CLICK_UPGRADED_MAX}`;
             elements.fastBtnPoints.textContent = `${CONFIG.FAST_CLICK_UPGRADED_MIN}-${CONFIG.FAST_CLICK_UPGRADED_MAX}`;
@@ -379,59 +323,47 @@ async function handleSlowClick() {
     }
 
     function startTimer() {
-        // Очищаем предыдущий таймер
-        if (state.timerInterval) {
-            clearInterval(state.timerInterval);
-        }
+        clearInterval(state.timerInterval);
         
-        // Запускаем новый таймер
         state.timerInterval = setInterval(() => {
-            const elapsed = Date.now() - state.slowBtnLastClick;
+            const now = Date.now();
+            const elapsed = state.slowBtnLastClick ? now - state.slowBtnLastClick : 0;
             const remaining = CONFIG.SLOW_CLICK_COOLDOWN - elapsed;
             
             if (remaining <= 0) {
-                // Таймер истек
                 elements.timer.textContent = "Доступно сейчас!";
                 elements.timer.className = "mt-2 text-sm font-mono text-green-400";
                 elements.slowBtn.disabled = false;
                 clearInterval(state.timerInterval);
             } else {
-                // Обновляем таймер
                 const mins = Math.floor(remaining / 60000);
                 const secs = Math.floor((remaining % 60000) / 1000);
                 elements.timer.textContent = `Доступно через: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 elements.timer.className = "mt-2 text-sm font-mono text-yellow-400";
-                elements.slowBtn.disabled = true;
+                
+                // Разблокируем кнопку только если нет ожидающего запроса
+                elements.slowBtn.disabled = state.isSlowClickPending;
             }
         }, 1000);
     }
 
     function showNotification(message, type = 'success') {
         elements.notificationMessage.textContent = message;
-        
-        // Устанавливаем цвет в зависимости от типа уведомления
-        if (type === 'success') {
-            elements.notification.className = "fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 animate-bounce";
-        } else {
-            elements.notification.className = "fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 animate-bounce";
-        }
+        elements.notification.className = type === 'success' 
+            ? "fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 animate-bounce" 
+            : "fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-xl shadow-xl flex items-center gap-2 animate-bounce";
         
         elements.notification.classList.remove('hidden');
-        
-        // Автоматическое скрытие уведомления
-        setTimeout(() => {
-            elements.notification.classList.add('hidden');
-        }, CONFIG.NOTIFICATION_DURATION);
+        setTimeout(() => elements.notification.classList.add('hidden'), CONFIG.NOTIFICATION_DURATION);
     }
 
-    // Вспомогательная функция для получения cookie
     function getCookie(name) {
         const cookieValue = document.cookie
             .split('; ')
             .find(row => row.startsWith(`${name}=`))
             ?.split('=')[1];
-        
         return cookieValue ? decodeURIComponent(cookieValue) : null;
     }
 </script>
+
 {% endblock %}

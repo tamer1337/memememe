@@ -133,5 +133,9 @@ urlpatterns = [
     path('messages/', get_messages, name='get_messages'),
     path('online/', online_users, name='online_users'),
 
+    #converter
+
+    path('converter/', ConverterView.as_view(), name='converter'),
+
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
