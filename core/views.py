@@ -918,6 +918,13 @@ def get_points_state(request):
         if user_points.last_slow_click:
             last_slow_click_timestamp = int(user_points.last_slow_click.timestamp() * 1000)
         
+        # Рассчитываем оставшееся время кулдауна
+        cooldown_remaining = 0
+        if user_points.last_slow_click:
+            elapsed = timezone.now() - user_points.last_slow_click
+            if elapsed < user_points.SLOW_CLICK_COOLDOWN:
+                cooldown_remaining = (user_points.SLOW_CLICK_COOLDOWN - elapsed).total_seconds()
+        
         return json_response(
             points=user_points.points,
             total_points=user_points.total_points,
@@ -925,7 +932,7 @@ def get_points_state(request):
             is_upgraded=user_points.is_upgraded,
             last_slow_click_timestamp=last_slow_click_timestamp,
             daily_limit=user_points.DAILY_FAST_CLICKS_LIMIT,
-            slow_cooldown_seconds = user_points.SLOW_CLICK_COOLDOWN.total_seconds()
+            cooldown_remaining=cooldown_remaining
         )
     except ObjectDoesNotExist:
         return json_error('Профиль баллов не найден', status=404)
@@ -938,16 +945,18 @@ def add_slow_click(request):
         with transaction.atomic():
             user_points = UserPoints.objects.select_for_update().get(user=request.user)
             
+            # Проверяем кулдаун
             if user_points.last_slow_click:
                 elapsed = timezone.now() - user_points.last_slow_click
                 if elapsed < user_points.SLOW_CLICK_COOLDOWN:
                     remaining = user_points.SLOW_CLICK_COOLDOWN - elapsed
                     return json_response(
                         success=False,
-                        message='Кулдаун еще не прошел',
+                        message='Пожалуйста, подождите',
                         cooldown=remaining.total_seconds()
                     )
             
+            # Выполняем клик
             user_points.make_slow_click()
             new_timestamp = int(user_points.last_slow_click.timestamp() * 1000)
             
@@ -956,6 +965,7 @@ def add_slow_click(request):
                 points=user_points.points,
                 total_points=user_points.total_points,
                 last_slow_click_timestamp=new_timestamp,
+                cooldown=user_points.SLOW_CLICK_COOLDOWN.total_seconds(),
                 message='+1 балл'
             )
     except ObjectDoesNotExist:
@@ -1143,5 +1153,5 @@ def online_users(request):
 
 from django.views.generic import TemplateView
 
-class ConverterView(TemplateView):
+class MassConverterView(TemplateView):
     template_name = 'mathsolver/converter.html'

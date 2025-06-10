@@ -134,7 +134,7 @@
 
 <script>
     const CONFIG = {
-        SLOW_CLICK_COOLDOWN: 15 * 60 * 1000,
+        SLOW_CLICK_COOLDOWN: 15 * 60 * 1000, // 15 минут в миллисекундах
         FAST_CLICK_BASE: 5,
         FAST_CLICK_UPGRADED_MIN: 5,
         FAST_CLICK_UPGRADED_MAX: 10,
@@ -150,7 +150,7 @@
         maxFastClicks: 100,
         isUpgraded: false,
         timerInterval: null,
-        isSlowClickPending: false
+        cooldownEndTime: 0 // Время окончания кулдауна
     };
 
     const elements = {
@@ -190,13 +190,19 @@
             state.isUpgraded = data.is_upgraded;
             state.maxFastClicks = data.daily_limit;
 
-            // Устанавливаем время последнего клика с сервера
+            // Используем серверное время для точной синхронизации
             if (data.last_slow_click_timestamp) {
                 state.slowBtnLastClick = data.last_slow_click_timestamp;
-                localStorage.setItem('slowBtnLastClick', state.slowBtnLastClick.toString());
+                state.cooldownEndTime = state.slowBtnLastClick + CONFIG.SLOW_CLICK_COOLDOWN;
+                localStorage.setItem('cooldownEndTime', state.cooldownEndTime.toString());
+            } else if (data.cooldown_remaining > 0) {
+                // Если есть оставшееся время кулдауна
+                state.cooldownEndTime = Date.now() + (data.cooldown_remaining * 1000);
+                localStorage.setItem('cooldownEndTime', state.cooldownEndTime.toString());
             } else {
-                const saved = localStorage.getItem('slowBtnLastClick');
-                if (saved) state.slowBtnLastClick = parseInt(saved);
+                // Пробуем восстановить из localStorage
+                const saved = localStorage.getItem('cooldownEndTime');
+                if (saved) state.cooldownEndTime = parseInt(saved);
             }
 
             updateUI();
@@ -207,9 +213,8 @@
     }
 
     async function handleSlowClick() {
-        // Блокируем кнопку и устанавливаем флаг ожидания
+        // Блокируем кнопку мгновенно
         elements.slowBtn.disabled = true;
-        state.isSlowClickPending = true;
         
         try {
             const response = await fetch('/grind/slow-click/', {
@@ -231,17 +236,15 @@
             
             if (data.last_slow_click_timestamp) {
                 state.slowBtnLastClick = data.last_slow_click_timestamp;
-                localStorage.setItem('slowBtnLastClick', data.last_slow_click_timestamp.toString());
+                state.cooldownEndTime = state.slowBtnLastClick + (data.cooldown * 1000);
+                localStorage.setItem('cooldownEndTime', state.cooldownEndTime.toString());
             }
 
             updateUI();
             startTimer();
-            showNotification(data.message || "Получен 1 балл!");
+            showNotification("Получен 1 балл!");
         } catch (error) {
             showNotification(error.message || 'Ошибка соединения', 'error');
-        } finally {
-            state.isSlowClickPending = false;
-            // Кнопка будет разблокирована таймером
         }
     }
 
@@ -265,7 +268,7 @@
             state.totalPoints = data.total_points;
             state.fastBtnClicks = data.fast_clicks_today;
             updateUI();
-            showNotification(data.message || `Получено ${data.amount} баллов!`);
+            showNotification(`Получено ${data.amount} баллов!`);
         } catch (error) {
             showNotification(error.message || 'Ошибка соединения', 'error');
         } finally {
@@ -290,7 +293,7 @@
             state.points = data.points;
             state.isUpgraded = data.is_upgraded;
             updateUI();
-            showNotification(data.message || "Улучшение куплено!");
+            showNotification("Улучшение куплено!");
         } catch (error) {
             showNotification(error.message || 'Ошибка соединения', 'error');
         } finally {
@@ -327,8 +330,7 @@
         
         state.timerInterval = setInterval(() => {
             const now = Date.now();
-            const elapsed = state.slowBtnLastClick ? now - state.slowBtnLastClick : 0;
-            const remaining = CONFIG.SLOW_CLICK_COOLDOWN - elapsed;
+            const remaining = state.cooldownEndTime - now;
             
             if (remaining <= 0) {
                 elements.timer.textContent = "Доступно сейчас!";
@@ -340,9 +342,7 @@
                 const secs = Math.floor((remaining % 60000) / 1000);
                 elements.timer.textContent = `Доступно через: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 elements.timer.className = "mt-2 text-sm font-mono text-yellow-400";
-                
-                // Разблокируем кнопку только если нет ожидающего запроса
-                elements.slowBtn.disabled = state.isSlowClickPending;
+                elements.slowBtn.disabled = true;
             }
         }, 1000);
     }

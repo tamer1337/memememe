@@ -1,68 +1,335 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>Конвертер величин</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">Конвертер масс</h1>
+    
     <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="valueInput">Значение:</label>
-                <input type="number" class="form-control" id="valueInput" placeholder="Введите число">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5>Метрические единицы</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>килотонна</label>
+                            <input type="number" class="form-control mass-input" data-unit="kiloton">
+                        </div>
+                        <div class="col-md-4">
+                            <label>тонна (т)</label>
+                            <input type="number" class="form-control mass-input" data-unit="ton">
+                        </div>
+                        <div class="col-md-4">
+                            <label>килоньютон (кН)</label>
+                            <input type="number" class="form-control mass-input" data-unit="kilonewton">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>центнер (ц)</label>
+                            <input type="number" class="form-control mass-input" data-unit="centner">
+                        </div>
+                        <div class="col-md-4">
+                            <label>килограмм (кг)</label>
+                            <input type="number" class="form-control mass-input" data-unit="kilogram">
+                        </div>
+                        <div class="col-md-4">
+                            <label>ньютон (Н)</label>
+                            <input type="number" class="form-control mass-input" data-unit="newton">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>грамм (г)</label>
+                            <input type="number" class="form-control mass-input" data-unit="gram">
+                        </div>
+                        <div class="col-md-4">
+                            <label>карат (ct)</label>
+                            <input type="number" class="form-control mass-input" data-unit="carat">
+                        </div>
+                        <div class="col-md-4">
+                            <label>сантиграмм</label>
+                            <input type="number" class="form-control mass-input" data-unit="centigram">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>миллиграмм (мг)</label>
+                            <input type="number" class="form-control mass-input" data-unit="milligram">
+                        </div>
+                        <div class="col-md-4">
+                            <label>микрограмм (мкг)</label>
+                            <input type="number" class="form-control mass-input" data-unit="microgram">
+                        </div>
+                        <div class="col-md-4">
+                            <label>атомная единица (amu)</label>
+                            <input type="number" class="form-control mass-input" data-unit="amu">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Тройская система -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5>Тройская система</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>фунт</label>
+                            <input type="number" class="form-control mass-input" data-unit="troy_pound">
+                        </div>
+                        <div class="col-md-4">
+                            <label>унция (ozt)</label>
+                            <input type="number" class="form-control mass-input" data-unit="troy_ounce">
+                        </div>
+                        <div class="col-md-4">
+                            <label>пеннивейт (dwt)</label>
+                            <input type="number" class="form-control mass-input" data-unit="pennyweight">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>английский карат</label>
+                            <input type="number" class="form-control mass-input" data-unit="english_carat">
+                        </div>
+                        <div class="col-md-4">
+                            <label>гран</label>
+                            <input type="number" class="form-control mass-input" data-unit="grain_troy">
+                        </div>
+                        <div class="col-md-4">
+                            <label>майт</label>
+                            <input type="number" class="form-control mass-input" data-unit="mite">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>дойт</label>
+                            <input type="number" class="form-control mass-input" data-unit="doit">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Китайские единицы -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5>Китайские единицы</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>дань (担)</label>
+                            <input type="number" class="form-control mass-input" data-unit="dan">
+                        </div>
+                        <div class="col-md-4">
+                            <label>цзинь (斤)</label>
+                            <input type="number" class="form-control mass-input" data-unit="jin">
+                        </div>
+                        <div class="col-md-4">
+                            <label>лян (两)</label>
+                            <input type="number" class="form-control mass-input" data-unit="liang">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>цянь (钱)</label>
+                            <input type="number" class="form-control mass-input" data-unit="qian">
+                        </div>
+                        <div class="col-md-4">
+                            <label>фэнь (分)</label>
+                            <input type="number" class="form-control mass-input" data-unit="fen">
+                        </div>
+                        <div class="col-md-4">
+                            <label>ли (厘)</label>
+                            <input type="number" class="form-control mass-input" data-unit="li">
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-4">
+                            <label>хао (毫)</label>
+                            <input type="number" class="form-control mass-input" data-unit="hao">
+                        </div>
+                        <div class="col-md-4">
+                            <label>сы (絲)</label>
+                            <input type="number" class="form-control mass-input" data-unit="si">
+                        </div>
+                        <div class="col-md-4">
+                            <label>ху (忽)</label>
+                            <input type="number" class="form-control mass-input" data-unit="hu">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Остальные системы -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5>Английские / Американские</h5>
+                </div>
+                <div class="card-body">
+                    <!-- ... аналогично для английских/американских единиц ... -->
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="fromUnit">Из:</label>
-                <select class="form-control" id="fromUnit">
-                    <option value="meter">Метры</option>
-                    <option value="kilometer">Километры</option>
-                    <option value="centimeter">Сантиметры</option>
-                </select>
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5>Британская аптечная</h5>
+                </div>
+                <div class="card-body">
+                    <!-- ... аналогично для аптечных единиц ... -->
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="toUnit">В:</label>
-                <select class="form-control" id="toUnit">
-                    <option value="kilometer">Километры</option>
-                    <option value="meter">Метры</option>
-                    <option value="centimeter">Сантиметры</option>
-                </select>
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5>Японские единицы</h5>
+                </div>
+                <div class="card-body">
+                    <!-- ... аналогично для японских единиц ... -->
+                </div>
             </div>
             
-            <button id="convertBtn" class="btn btn-primary">Конвертировать</button>
-        </div>
-        
-        <div class="col-md-6">
-            <h3>Результат:</h3>
-            <div id="result" class="alert alert-success" style="display:none;"></div>
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5>Старорусские меры</h5>
+                </div>
+                <div class="card-body">
+                    <!-- ... аналогично для старорусских единиц ... -->
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-document.getElementById('convertBtn').addEventListener('click', function() {
-    const value = parseFloat(document.getElementById('valueInput').value);
-    const fromUnit = document.getElementById('fromUnit').value;
-    const toUnit = document.getElementById('toUnit').value;
-    
-    if (isNaN(value)) {
-        alert("Пожалуйста, введите корректное число");
-        return;
-    }
-    
-    // Коэффициенты конвертации (метры как базовая единица)
+document.addEventListener('DOMContentLoaded', function() {
+    // Коэффициенты перевода в граммы
     const factors = {
-        meter: 1,
-        kilometer: 1000,
-        centimeter: 0.01
+        // Метрические
+        'kiloton': 1000000000000,
+        'ton': 1000000,
+        'kilonewton': 101971.621,
+        'centner': 100000,
+        'kilogram': 1000,
+        'newton': 101.971621,
+        'gram': 1,
+        'carat': 0.2,
+        'centigram': 0.01,
+        'milligram': 0.001,
+        'microgram': 0.000001,
+        'amu': 1.66053904e-24,
+        
+        // Тройская система
+        'troy_pound': 373.2417216,
+        'troy_ounce': 31.1034768,
+        'pennyweight': 1.55517384,
+        'english_carat': 0.2,
+        'grain_troy': 0.06479891,
+        'mite': 0.0032399455,
+        'doit': 0.00006479891,
+        
+        // Китайские
+        'dan': 50000,
+        'jin': 500,
+        'liang': 50,
+        'qian': 5,
+        'fen': 0.5,
+        'li': 0.05,
+        'hao': 0.005,
+        'si': 0.0005,
+        'hu': 0.00005,
+        
+        // Английские/Американские
+        'long_ton': 1016046.9088,
+        'short_ton': 907184.74,
+        'kilopound': 453592.37,
+        'long_hundredweight': 50802.34544,
+        'short_hundredweight': 45359.237,
+        'stone': 6350.29318,
+        'pound': 453.59237,
+        'ounce': 28.349523125,
+        'dram': 1.7718451953125,
+        'grain_avdp': 0.06479891,
+        
+        // Британская аптечная
+        'apothecary_pound': 373.2417216,
+        'apothecary_ounce': 31.1034768,
+        'apothecary_dram': 3.8879346,
+        'scruple': 1.2959782,
+        'grain_apothecary': 0.06479891,
+        
+        // Японские
+        'kan': 3750,
+        'kin': 600,
+        'hyakume': 375,
+        'momme': 3.75,
+        'fun': 0.375,
+        
+        // Старорусские
+        'berkovets': 163800,
+        'pood': 16380,
+        'funt': 409.5,
+        'lot': 12.796875,
+        'zolotnik': 4.265625,
+        'dolya': 0.04443359375
     };
     
-    // Конвертация через метры
-    const valueInMeters = value * factors[fromUnit];
-    const result = valueInMeters / factors[toUnit];
+    const inputs = document.querySelectorAll('.mass-input');
+    let currentFocus = null;
     
-    const resultElement = document.getElementById('result');
-    resultElement.innerHTML = `${value} ${fromUnit} = ${result.toFixed(4)} ${toUnit}`;
-    resultElement.style.display = 'block';
+    // Обработчик фокуса
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            currentFocus = this;
+            this.select();
+        });
+    });
+    
+    // Обработчик ввода
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            // Если поле пустое - сбросить все значения
+            if (this.value === '') {
+                inputs.forEach(i => i.value = '');
+                return;
+            }
+            
+            const value = parseFloat(this.value);
+            if (isNaN(value)) return;
+            
+            const unit = this.dataset.unit;
+            const grams = value * factors[unit];
+            
+            inputs.forEach(other => {
+                if (other !== currentFocus) {
+                    const otherUnit = other.dataset.unit;
+                    other.value = (grams / factors[otherUnit]).toFixed(10);
+                }
+            });
+        });
+    });
+    
+    // Инициализация начального значения
+    const gramInput = document.querySelector('[data-unit="gram"]');
+    gramInput.value = '1';
+    gramInput.dispatchEvent(new Event('input'));
 });
 </script>
+
+<style>
+.mass-input {
+    margin-bottom: 10px;
+}
+.card {
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+</style>
 {% endblock %}

@@ -135,7 +135,7 @@ urlpatterns = [
 
     #converter
 
-    path('converter/', ConverterView.as_view(), name='converter'),
+    path('mass-converter/', MassConverterView.as_view(), name='mass_converter'),
 
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
