@@ -401,18 +401,6 @@ class DictionaryEntry(models.Model):
 
 
 from django.db import models
-from django.conf import settings
-from django.utils import timezone
-from django.core.exceptions import ValidationError
-from django.db import transaction
-from django.db.models import Sum, Index
-from datetime import timedelta
-import random
-import logging
-
-logger = logging.getLogger(__name__)
-
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.utils import timezone
@@ -444,7 +432,7 @@ class UserPoints(models.Model):
     SLOW_CLICK_COOLDOWN = timedelta(minutes=15)
     MESSAGE_COST = 100
     UPGRADE_COST = 1000
-    DAILY_FAST_CLICKS_LIMIT = 100  # Единое имя константы
+    DAILY_FAST_CLICKS_LIMIT = 100
     FAST_CLICK_MIN = 5
     FAST_CLICK_MAX = 10
     FAST_CLICK_UPGRADED_MIN = 10
@@ -457,6 +445,7 @@ class UserPoints(models.Model):
     last_slow_click = models.DateTimeField(null=True, blank=True)
     last_activity = models.DateTimeField(auto_now=True)
     fast_clicks_today = models.PositiveIntegerField(default=0)
+    first_click_today = models.DateTimeField(null=True, blank=True)  # Новое поле для времени первого клика
 
     objects = UserPointsManager()
 
@@ -542,6 +531,11 @@ class UserPoints(models.Model):
     def make_fast_click(self):
         self._reset_daily_counters_if_needed()
         
+        # Устанавливаем время первого клика, если это первый клик за период
+        if self.fast_clicks_today == 0:
+            self.first_click_today = timezone.now()
+            self.save(update_fields=['first_click_today'])
+        
         if self.fast_clicks_today >= self.DAILY_FAST_CLICKS_LIMIT:
             return (False, 0)
             
@@ -568,8 +562,24 @@ class UserPoints(models.Model):
         return True
 
     def _reset_daily_counters_if_needed(self):
-        today = timezone.now().date()
-        if self.last_activity.date() < today:
+        now = timezone.now()
+        # Если поле first_click_today не установлено, но fast_clicks_today > 0,
+        # это означает, что запись была создана до добавления этого поля
+        if self.first_click_today is None and self.fast_clicks_today > 0:
+            self.fast_clicks_today = 0
+            self.save(update_fields=['fast_clicks_today'])
+            return
+        
+        # Если first_click_today установлено, проверяем, нужно ли сбросить счетчик
+        if self.first_click_today:
+            # Сбрасываем счетчик, если прошло более 24 часов
+            if now - self.first_click_today >= timedelta(days=1):
+                self.fast_clicks_today = 0
+                self.first_click_today = None
+                self.save(update_fields=['fast_clicks_today', 'first_click_today'])
+        # Если счетчик кликов больше 0, но время первого клика не установлено,
+        # это означает новый день (или ошибка состояния)
+        elif self.fast_clicks_today > 0:
             self.fast_clicks_today = 0
             self.save(update_fields=['fast_clicks_today'])
 

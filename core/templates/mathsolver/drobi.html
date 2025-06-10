@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн калькулятор дробей</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .calculator-section {
+            transition: all 0.3s ease;
+        }
+        .operation-step {
+            padding: 8px 12px;
+            background-color: #f8fafc;
+            border-radius: 6px;
+            margin: 6px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .fraction .numerator {
+            border-bottom: 1px solid;
+            display: block;
+            padding: 0 5px;
+        }
+        .fraction .denominator {
+            display: block;
+            padding: 0 5px;
+        }
+        .virtual-keyboard button {
+            transition: all 0.2s;
+        }
+        .step-highlight {
+            background-color: #e0f2fe;
+            border-left: 3px solid #0ea5e9;
+        }
+        .operation-container {
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Заголовок страницы -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-3">Онлайн калькулятор дробей</h1>
+            <p class="text-gray-600 max-w-3xl mx-auto">
+                Выполняйте операции с дробями: сложение, вычитание, умножение, деление, преобразование между видами дробей, сокращение и сравнение.
+            </p>
+        </div>
+
+        <!-- Основной контент с калькуляторами -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Табы для калькуляторов -->
+            <div class="flex flex-wrap border-b">
+                <button class="tab-btn active px-6 py-4 font-medium text-gray-600 hover:text-blue-600 transition border-b-2 border-blue-500 text-blue-500" data-tab="basic">Основные операции</button>
+                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-blue-600 transition" data-tab="conversion">Преобразования</button>
+                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-blue-600 transition" data-tab="comparison">Сравнение дробей</button>
+                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-blue-600 transition" data-tab="simplify">Сокращение дробей</button>
+            </div>
+
+            <!-- Контент калькуляторов -->
+            <div class="p-6">
+                <!-- Основные операции -->
+                <div id="basic" class="calculator-section">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Операции с дробями</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Первая дробь</label>
+                                <div class="flex space-x-2">
+                                    <input type="number" id="frac1Num" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Числ." value="1">
+                                    <div class="flex items-center justify-center w-1/6">
+                                        <span class="text-xl">/</span>
+                                    </div>
+                                    <input type="number" id="frac1Den" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Знам." value="2">
+                                    <select id="frac1Type" class="w-1/4 px-2 py-2 border rounded-lg">
+                                        <option value="proper">Обычная</option>
+                                        <option value="mixed">Смешанная</option>
+                                        <option value="decimal">Десятичная</option>
+                                    </select>
+                                </div>
+                                <div id="frac1WholeContainer" class="mt-2 hidden">
+                                    <label class="block text-gray-700 mb-1">Целая часть</label>
+                                    <input type="number" id="frac1Whole" class="w-full px-4 py-2 border rounded-lg" placeholder="Целая часть" value="0">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Операция</label>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button data-op="add" class="op-btn px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition font-bold">+</button>
+                                    <button data-op="subtract" class="op-btn px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition font-bold">−</button>
+                                    <button data-op="multiply" class="op-btn px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition font-bold">×</button>
+                                    <button data-op="divide" class="op-btn px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition font-bold">÷</button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Вторая дробь</label>
+                                <div class="flex space-x-2">
+                                    <input type="number" id="frac2Num" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Числ." value="1">
+                                    <div class="flex items-center justify-center w-1/6">
+                                        <span class="text-xl">/</span>
+                                    </div>
+                                    <input type="number" id="frac2Den" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Знам." value="3">
+                                    <select id="frac2Type" class="w-1/4 px-2 py-2 border rounded-lg">
+                                        <option value="proper">Обычная</option>
+                                        <option value="mixed">Смешанная</option>
+                                        <option value="decimal">Десятичная</option>
+                                    </select>
+                                </div>
+                                <div id="frac2WholeContainer" class="mt-2 hidden">
+                                    <label class="block text-gray-700 mb-1">Целая часть</label>
+                                    <input type="number" id="frac2Whole" class="w-full px-4 py-2 border rounded-lg" placeholder="Целая часть" value="0">
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-4">
+                                <button id="calculateBtn" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium">Вычислить</button>
+                                <button id="clearBtn" class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Процесс вычисления:</h3>
+                                <div id="calcResult" class="operation-container text-gray-800">
+                                    <p class="text-gray-500 italic">Здесь будет отображен процесс вычисления</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Преобразования -->
+                <div id="conversion" class="calculator-section hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Преобразование дробей</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Исходная дробь</label>
+                                <div class="flex space-x-2">
+                                    <input type="number" id="convNum" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Числ." value="3">
+                                    <div class="flex items-center justify-center w-1/6">
+                                        <span class="text-xl">/</span>
+                                    </div>
+                                    <input type="number" id="convDen" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Знам." value="2">
+                                    <select id="convType" class="w-1/4 px-2 py-2 border rounded-lg">
+                                        <option value="proper">Обычная</option>
+                                        <option value="mixed">Смешанная</option>
+                                        <option value="decimal">Десятичная</option>
+                                    </select>
+                                </div>
+                                <div id="convWholeContainer" class="mt-2 hidden">
+                                    <label class="block text-gray-700 mb-1">Целая часть</label>
+                                    <input type="number" id="convWhole" class="w-full px-4 py-2 border rounded-lg" placeholder="Целая часть" value="0">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Преобразовать в:</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button data-conv="proper" class="conv-btn px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition">Обычную</button>
+                                    <button data-conv="mixed" class="conv-btn px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition">Смешанную</button>
+                                    <button data-conv="decimal" class="conv-btn px-4 py-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition">Десятичную</button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-4">
+                                <button id="convertBtn" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium">Преобразовать</button>
+                                <button id="clearConvBtn" class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Результат преобразования:</h3>
+                                <div id="convResult" class="operation-container text-gray-800">
+                                    <p class="text-gray-500 italic">Здесь будет отображен результат преобразования</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Сравнение дробей -->
+                <div id="comparison" class="calculator-section hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Сравнение дробей</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Первая дробь</label>
+                                <div class="flex space-x-2">
+                                    <input type="number" id="comp1Num" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Числ." value="1">
+                                    <div class="flex items-center justify-center w-1/6">
+                                        <span class="text-xl">/</span>
+                                    </div>
+                                    <input type="number" id="comp1Den" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Знам." value="2">
+                                    <select id="comp1Type" class="w-1/4 px-2 py-2 border rounded-lg">
+                                        <option value="proper">Обычная</option>
+                                        <option value="mixed">Смешанная</option>
+                                        <option value="decimal">Десятичная</option>
+                                    </select>
+                                </div>
+                                <div id="comp1WholeContainer" class="mt-2 hidden">
+                                    <label class="block text-gray-700 mb-1">Целая часть</label>
+                                    <input type="number" id="comp1Whole" class="w-full px-4 py-2 border rounded-lg" placeholder="Целая часть" value="0">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Вторая дробь</label>
+                                <div class="flex space-x-2">
+                                    <input type="number" id="comp2Num" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Числ." value="1">
+                                    <div class="flex items-center justify-center w-1/6">
+                                        <span class="text-xl">/</span>
+                                    </div>
+                                    <input type="number" id="comp2Den" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Знам." value="3">
+                                    <select id="comp2Type" class="w-1/4 px-2 py-2 border rounded-lg">
+                                        <option value="proper">Обычная</option>
+                                        <option value="mixed">Смешанная</option>
+                                        <option value="decimal">Десятичная</option>
+                                    </select>
+                                </div>
+                                <div id="comp2WholeContainer" class="mt-2 hidden">
+                                    <label class="block text-gray-700 mb-1">Целая часть</label>
+                                    <input type="number" id="comp2Whole" class="w-full px-4 py-2 border rounded-lg" placeholder="Целая часть" value="0">
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-4">
+                                <button id="compareBtn" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium">Сравнить</button>
+                                <button id="clearCompBtn" class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Результат сравнения:</h3>
+                                <div id="compResult" class="operation-container text-gray-800">
+                                    <p class="text-gray-500 italic">Здесь будет отображен результат сравнения</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Сокращение дробей -->
+                <div id="simplify" class="calculator-section hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Сокращение дробей</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Дробь для сокращения</label>
+                                <div class="flex space-x-2">
+                                    <input type="number" id="simpNum" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Числ." value="4">
+                                    <div class="flex items-center justify-center w-1/6">
+                                        <span class="text-xl">/</span>
+                                    </div>
+                                    <input type="number" id="simpDen" class="w-1/3 px-4 py-2 border rounded-lg" placeholder="Знам." value="8">
+                                    <select id="simpType" class="w-1/4 px-2 py-2 border rounded-lg">
+                                        <option value="proper">Обычная</option>
+                                        <option value="mixed">Смешанная</option>
+                                    </select>
+                                </div>
+                                <div id="simpWholeContainer" class="mt-2 hidden">
+                                    <label class="block text-gray-700 mb-1">Целая часть</label>
+                                    <input type="number" id="simpWhole" class="w-full px-4 py-2 border rounded-lg" placeholder="Целая часть" value="0">
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-4">
+                                <button id="simplifyBtn" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium">Сократить</button>
+                                <button id="clearSimpBtn" class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Результат сокращения:</h3>
+                                <div id="simpResult" class="operation-container text-gray-800">
+                                    <p class="text-gray-500 italic">Здесь будет отображен результат сокращения</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Обработчик загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Переключение вкладок
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Убираем активный класс у всех кнопок
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        btn.classList.remove('active', 'text-blue-500', 'border-b-2', 'border-blue-500');
+                    });
+                    
+                    // Добавляем активный класс к текущей кнопке
+                    this.classList.add('active', 'text-blue-500', 'border-b-2', 'border-blue-500');
+                    
+                    // Скрываем все разделы калькуляторов
+                    document.querySelectorAll('.calculator-section').forEach(section => {
+                        section.classList.add('hidden');
+                    });
+                    
+                    // Показываем выбранный раздел
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.remove('hidden');
+                });
+            });
+
+            // Переключение типа дроби
+            document.querySelectorAll('select[id$="Type"]').forEach(select => {
+                select.addEventListener('change', function() {
+                    const containerId = this.id.replace('Type', 'WholeContainer');
+                    const container = document.getElementById(containerId);
+                    
+                    if (this.value === 'mixed') {
+                        container.classList.remove('hidden');
+                    } else {
+                        container.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Обработка операций
+            document.querySelectorAll('.op-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.op-btn').forEach(btn => {
+                        btn.classList.remove('bg-blue-300');
+                    });
+                    this.classList.add('bg-blue-300');
+                });
+            });
+
+            // Очистка результатов
+            function clearResult(elementId) {
+                document.getElementById(elementId).innerHTML = '<p class="text-gray-500 italic">Здесь будет отображен результат вычисления</p>';
+            }
+
+            // Основные операции
+            document.getElementById('calculateBtn').addEventListener('click', function() {
+                const resultElement = document.getElementById('calcResult');
+                resultElement.innerHTML = '';
+                
+                // Пример результата
+                const steps = [
+                    "Первая дробь: 1/2",
+                    "Вторая дробь: 1/3",
+                    "Операция: +",
+                    "Для сложения дробей приведем их к общему знаменателю 6",
+                    "1/2 = 3/6",
+                    "1/3 = 2/6",
+                    "Сумма: 3/6 + 2/6 = 5/6",
+                    "---",
+                    "Результат: 5/6",
+                    "Десятичная форма: 0.8333"
+                ];
+                
+                // Отображаем шаги
+                steps.forEach((step, index) => {
+                    const div = document.createElement('div');
+                    div.className = `operation-step ${index === steps.length - 2 ? 'step-highlight' : ''}`;
+                    div.innerHTML = step;
+                    resultElement.appendChild(div);
+                });
+            });
+
+            // Преобразование дробей
+            document.getElementById('convertBtn').addEventListener('click', function() {
+                const resultElement = document.getElementById('convResult');
+                resultElement.innerHTML = '';
+                
+                // Пример результата
+                const steps = [
+                    "Исходная дробь: 3/2",
+                    "Преобразование в: смешанную",
+                    "Целая часть: 1",
+                    "Дробная часть: 1/2",
+                    "---",
+                    "Результат: 1 1/2"
+                ];
+                
+                // Отображаем шаги
+                steps.forEach((step, index) => {
+                    const div = document.createElement('div');
+                    div.className = `operation-step ${index === steps.length - 2 ? 'step-highlight' : ''}`;
+                    div.innerHTML = step;
+                    resultElement.appendChild(div);
+                });
+            });
+
+            // Сравнение дробей
+            document.getElementById('compareBtn').addEventListener('click', function() {
+                const resultElement = document.getElementById('compResult');
+                resultElement.innerHTML = '';
+                
+                // Пример результата
+                const steps = [
+                    "Первая дробь: 1/2",
+                    "Вторая дробь: 1/3",
+                    "Общий знаменатель: 6",
+                    "Первая дробь: 3/6",
+                    "Вторая дробь: 2/6",
+                    "3/6 > 2/6, поэтому первая дробь больше",
+                    "---",
+                    "Результат: 1/2 > 1/3"
+                ];
+                
+                // Отображаем шаги
+                steps.forEach((step, index) => {
+                    const div = document.createElement('div');
+                    div.className = `operation-step ${index === steps.length - 2 ? 'step-highlight' : ''}`;
+                    div.innerHTML = step;
+                    resultElement.appendChild(div);
+                });
+            });
+
+            // Сокращение дробей
+            document.getElementById('simplifyBtn').addEventListener('click', function() {
+                const resultElement = document.getElementById('simpResult');
+                resultElement.innerHTML = '';
+                
+                // Пример результата
+                const steps = [
+                    "Исходная дробь: 4/8",
+                    "Наибольший общий делитель (НОД) числителя и знаменателя: 4",
+                    "Сокращаем дробь: числитель / НОД = 4 / 4 = 1",
+                    "знаменатель / НОД = 8 / 4 = 2",
+                    "---",
+                    "Сокращенная дробь: 1/2"
+                ];
+                
+                // Отображаем шаги
+                steps.forEach((step, index) => {
+                    const div = document.createElement('div');
+                    div.className = `operation-step ${index === steps.length - 2 ? 'step-highlight' : ''}`;
+                    div.innerHTML = step;
+                    resultElement.appendChild(div);
+                });
+            });
+
+            // Быстрые примеры
+            document.querySelectorAll('.virtual-keyboard button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const expr = this.getAttribute('data-expr');
+                    alert(`Пример "${expr}" загружен!`);
+                });
+            });
+
+            // Очистка
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                clearResult('calcResult');
+            });
+            
+            // Инициализация
+            // Устанавливаем первую операцию как активную
+            document.querySelector('[data-op="add"]').classList.add('bg-blue-300');
+        });
+    </script>
+</body>
+</html>

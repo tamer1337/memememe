@@ -137,5 +137,9 @@ urlpatterns = [
 
     path('mass-converter/', MassConverterView.as_view(), name='mass_converter'),
 
+    path('theory/', theory.as_view(), name='theory'),    
+
+    path('drobi/', drobi.as_view(), name='drobi'), 
+
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

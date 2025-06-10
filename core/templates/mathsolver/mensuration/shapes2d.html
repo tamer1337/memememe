@@ -2,23 +2,24 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-6 text-gray-800">Plane Figures: Area and Perimeter</h1>
-  
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">Плоские фигуры: площадь и периметр</h1>
+
   <div class="overflow-x-auto bg-white rounded-lg shadow-md">
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shape</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perimeter</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diagram</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Фигура</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Площадь</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Периметр</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Схема</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <!-- Square -->
+
+        <!-- Квадрат -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Square</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = a²</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Квадрат</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = a²</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = 4a</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-blue-100 rounded flex items-center justify-center">
@@ -29,10 +30,10 @@
           </td>
         </tr>
 
-        <!-- Rectangle -->
+        <!-- Прямоугольник -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Rectangle</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = l × w</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Прямоугольник</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = l × w</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = 2(l + w)</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-green-100 rounded flex items-center justify-center">
@@ -43,10 +44,10 @@
           </td>
         </tr>
 
-        <!-- Circle -->
+        <!-- Круг -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Circle</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = πr²</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Круг</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = πr²</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = 2πr</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
@@ -57,10 +58,10 @@
           </td>
         </tr>
 
-        <!-- Equilateral Triangle -->
+        <!-- Равносторонний треугольник -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Equilateral Triangle</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = (√3/4)a²</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Равносторонний треугольник</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = (√3/4)a²</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = 3a</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-yellow-100 rounded flex items-center justify-center">
@@ -71,10 +72,10 @@
           </td>
         </tr>
 
-        <!-- Isosceles Triangle -->
+        <!-- Равнобедренный треугольник -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Isosceles Triangle</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = (b/4)√(4a² - b²)</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Равнобедренный треугольник</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = (b/4)√(4a² - b²)</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = 2a + b</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-red-100 rounded flex items-center justify-center">
@@ -85,10 +86,10 @@
           </td>
         </tr>
 
-        <!-- Scalene Triangle -->
+        <!-- Разносторонний треугольник -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Scalene Triangle</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = √[s(s-a)(s-b)(s-c)]<br>s = (a+b+c)/2</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Разносторонний треугольник</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = √[s(s-a)(s-b)(s-c)]<br>s = (a+b+c)/2</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = a + b + c</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-indigo-100 rounded flex items-center justify-center">
@@ -99,10 +100,10 @@
           </td>
         </tr>
 
-        <!-- Right Triangle -->
+        <!-- Прямоугольный треугольник -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Right Triangle</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = (ab)/2</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Прямоугольный треугольник</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = (ab)/2</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = a + b + √(a² + b²)</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-pink-100 rounded flex items-center justify-center">
@@ -113,10 +114,10 @@
           </td>
         </tr>
 
-        <!-- Rhombus -->
+        <!-- Ромб -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Rhombus</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = (d₁ × d₂)/2</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Ромб</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = (d₁ × d₂)/2</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = 4a</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-cyan-100 rounded flex items-center justify-center">
@@ -127,10 +128,10 @@
           </td>
         </tr>
 
-        <!-- Parallelogram -->
+        <!-- Параллелограмм -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Parallelogram</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = b × h</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Параллелограмм</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = b × h</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = 2(a + b)</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-orange-100 rounded flex items-center justify-center">
@@ -141,10 +142,10 @@
           </td>
         </tr>
 
-        <!-- Trapezoid -->
+        <!-- Трапеция -->
         <tr class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Trapezoid</td>
-          <td class="px-6 py-4 whitespace-nowrap text-gray-500">A = h(a + b)/2</td>
+          <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Трапеция</td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-500">S = h(a + b)/2</td>
           <td class="px-6 py-4 whitespace-nowrap text-gray-500">P = a + b + c + d</td>
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-16 h-16 bg-lime-100 rounded flex items-center justify-center">
@@ -158,25 +159,24 @@
     </table>
   </div>
 
-<a href="{% url 'mensuration' %}" 
-   class="fixed top-12 left-12 text-black hover:text-gray-700 transition-colors">
+  <a href="{% url 'mensuration' %}" 
+     class="fixed top-12 left-12 text-black hover:text-gray-700 transition-colors">
     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
               d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
     </svg>
-</a>
+  </a>
 
   <div class="mt-8 bg-gray-50 p-4 rounded-lg">
-    <h3 class="font-medium text-gray-800 mb-2">Legend:</h3>
+    <h3 class="font-medium text-gray-800 mb-2">Обозначения:</h3>
     <ul class="text-gray-600 text-sm space-y-1">
-      <li><span class="font-medium">a, b, c, d</span> = side lengths</li>
-      <li><span class="font-medium">l, w</span> = length, width</li>
-      <li><span class="font-medium">r</span> = radius</li>
-      <li><span class="font-medium">h</span> = height</li>
-      <li><span class="font-medium">d₁, d₂</span> = diagonals (rhombus)</li>
-      <li><span class="font-medium">s</span> = semi-perimeter (Heron's formula)</li>
+      <li><span class="font-medium">a, b, c, d</span> — длины сторон</li>
+      <li><span class="font-medium">l, w</span> — длина и ширина</li>
+      <li><span class="font-medium">r</span> — радиус</li>
+      <li><span class="font-medium">h</span> — высота</li>
+      <li><span class="font-medium">d₁, d₂</span> — диагонали (у ромба)</li>
+      <li><span class="font-medium">s</span> — полупериметр (формула Герона)</li>
     </ul>
   </div>
 </div>
 {% endblock %}
-

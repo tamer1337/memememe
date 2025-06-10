@@ -1,207 +1,318 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Конвертер масс</h1>
-    
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5>Метрические единицы</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label>килотонна</label>
-                            <input type="number" class="form-control mass-input" data-unit="kiloton">
-                        </div>
-                        <div class="col-md-4">
-                            <label>тонна (т)</label>
-                            <input type="number" class="form-control mass-input" data-unit="ton">
-                        </div>
-                        <div class="col-md-4">
-                            <label>килоньютон (кН)</label>
-                            <input type="number" class="form-control mass-input" data-unit="kilonewton">
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-4">
-                            <label>центнер (ц)</label>
-                            <input type="number" class="form-control mass-input" data-unit="centner">
-                        </div>
-                        <div class="col-md-4">
-                            <label>килограмм (кг)</label>
-                            <input type="number" class="form-control mass-input" data-unit="kilogram">
-                        </div>
-                        <div class="col-md-4">
-                            <label>ньютон (Н)</label>
-                            <input type="number" class="form-control mass-input" data-unit="newton">
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-4">
-                            <label>грамм (г)</label>
-                            <input type="number" class="form-control mass-input" data-unit="gram">
-                        </div>
-                        <div class="col-md-4">
-                            <label>карат (ct)</label>
-                            <input type="number" class="form-control mass-input" data-unit="carat">
-                        </div>
-                        <div class="col-md-4">
-                            <label>сантиграмм</label>
-                            <input type="number" class="form-control mass-input" data-unit="centigram">
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-4">
-                            <label>миллиграмм (мг)</label>
-                            <input type="number" class="form-control mass-input" data-unit="milligram">
-                        </div>
-                        <div class="col-md-4">
-                            <label>микрограмм (мкг)</label>
-                            <input type="number" class="form-control mass-input" data-unit="microgram">
-                        </div>
-                        <div class="col-md-4">
-                            <label>атомная единица (amu)</label>
-                            <input type="number" class="form-control mass-input" data-unit="amu">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Тройская система -->
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <h5>Тройская система</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label>фунт</label>
-                            <input type="number" class="form-control mass-input" data-unit="troy_pound">
-                        </div>
-                        <div class="col-md-4">
-                            <label>унция (ozt)</label>
-                            <input type="number" class="form-control mass-input" data-unit="troy_ounce">
-                        </div>
-                        <div class="col-md-4">
-                            <label>пеннивейт (dwt)</label>
-                            <input type="number" class="form-control mass-input" data-unit="pennyweight">
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-4">
-                            <label>английский карат</label>
-                            <input type="number" class="form-control mass-input" data-unit="english_carat">
-                        </div>
-                        <div class="col-md-4">
-                            <label>гран</label>
-                            <input type="number" class="form-control mass-input" data-unit="grain_troy">
-                        </div>
-                        <div class="col-md-4">
-                            <label>майт</label>
-                            <input type="number" class="form-control mass-input" data-unit="mite">
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-4">
-                            <label>дойт</label>
-                            <input type="number" class="form-control mass-input" data-unit="doit">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Китайские единицы -->
-            <div class="card mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5>Китайские единицы</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label>дань (担)</label>
-                            <input type="number" class="form-control mass-input" data-unit="dan">
-                        </div>
-                        <div class="col-md-4">
-                            <label>цзинь (斤)</label>
-                            <input type="number" class="form-control mass-input" data-unit="jin">
-                        </div>
-                        <div class="col-md-4">
-                            <label>лян (两)</label>
-                            <input type="number" class="form-control mass-input" data-unit="liang">
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-4">
-                            <label>цянь (钱)</label>
-                            <input type="number" class="form-control mass-input" data-unit="qian">
-                        </div>
-                        <div class="col-md-4">
-                            <label>фэнь (分)</label>
-                            <input type="number" class="form-control mass-input" data-unit="fen">
-                        </div>
-                        <div class="col-md-4">
-                            <label>ли (厘)</label>
-                            <input type="number" class="form-control mass-input" data-unit="li">
-                        </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-4">
-                            <label>хао (毫)</label>
-                            <input type="number" class="form-control mass-input" data-unit="hao">
-                        </div>
-                        <div class="col-md-4">
-                            <label>сы (絲)</label>
-                            <input type="number" class="form-control mass-input" data-unit="si">
-                        </div>
-                        <div class="col-md-4">
-                            <label>ху (忽)</label>
-                            <input type="number" class="form-control mass-input" data-unit="hu">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Остальные системы -->
-            <div class="card mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5>Английские / Американские</h5>
-                </div>
-                <div class="card-body">
-                    <!-- ... аналогично для английских/американских единиц ... -->
-                </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-header bg-danger text-white">
-                    <h5>Британская аптечная</h5>
-                </div>
-                <div class="card-body">
-                    <!-- ... аналогично для аптечных единиц ... -->
-                </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-header bg-secondary text-white">
-                    <h5>Японские единицы</h5>
-                </div>
-                <div class="card-body">
-                    <!-- ... аналогично для японских единиц ... -->
-                </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-header bg-dark text-white">
-                    <h5>Старорусские меры</h5>
-                </div>
-                <div class="card-body">
-                    <!-- ... аналогично для старорусских единиц ... -->
-                </div>
-            </div>
-        </div>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+  <div class="max-w-6xl mx-auto">
+    <!-- Заголовок -->
+    <div class="text-center mb-10">
+      <h1 class="text-4xl md:text-5xl font-bold text-indigo-800 mb-4">Конвертер исторических систем мер</h1>
+      <p class="text-lg text-indigo-600 max-w-3xl mx-auto">Мгновенно конвертируйте значения массы между различными историческими системами мер</p>
     </div>
+
+    <div class="grid grid-cols-1 gap-8">
+      <!-- Метрические единицы -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-indigo-600 py-4 px-6">
+          <h2 class="text-xl font-bold text-white">Метрические единицы</h2>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">килотонна</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="kiloton">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">тонна (т)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="ton">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">килоньютон (кН)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="kilonewton">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">центнер (ц)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="centner">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">килограмм (кг)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="kilogram">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">ньютон (Н)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="newton">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">грамм (г)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="gram">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">карат (ct)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="carat">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">сантиграмм</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="centigram">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">миллиграмм (мг)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="milligram">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">микрограмм (мкг)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="microgram">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">атомная единица (amu)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" data-unit="amu">
+          </div>
+        </div>
+      </div>
+
+      <!-- Тройская система -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-emerald-600 py-4 px-6">
+          <h2 class="text-xl font-bold text-white">Тройская система</h2>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">фунт</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" data-unit="troy_pound">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">унция (ozt)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" data-unit="troy_ounce">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">пеннивейт (dwt)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" data-unit="pennyweight">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">английский карат</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" data-unit="english_carat">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">гран</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" data-unit="grain_troy">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">майт</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" data-unit="mite">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">дойт</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent" data-unit="doit">
+          </div>
+        </div>
+      </div>
+
+      <!-- Китайские единицы -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-amber-600 py-4 px-6">
+          <h2 class="text-xl font-bold text-white">Китайские единицы</h2>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">дань (担)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" data-unit="dan">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">цзинь (斤)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" data-unit="jin">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">лян (两)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" data-unit="liang">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">цянь (钱)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" data-unit="qian">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">фэнь (分)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" data-unit="fen">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">ли (厘)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" data-unit="li">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">хао (毫)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" data-unit="hao">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">сы (絲)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" data-unit="si">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">ху (忽)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent" data-unit="hu">
+          </div>
+        </div>
+      </div>
+
+      <!-- Английские / Американские -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-red-600 py-4 px-6">
+          <h2 class="text-xl font-bold text-white">Английские / Американские</h2>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">длинная тонна (брит.)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="long_ton">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">короткая тонна (США)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="short_ton">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">килофунт, кип</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="kilopound">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">длинный центнер (брит.)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="long_hundredweight">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">короткий центнер (США)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="short_hundredweight">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">стоун</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="stone">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">фунт (lb)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="pound_avdp">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">унция (oz)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="ounce_avdp">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">драхма (dr)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="dram">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">гран (gr)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" data-unit="grain_avdp">
+          </div>
+        </div>
+      </div>
+
+      <!-- Британская аптечная -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-purple-600 py-4 px-6">
+          <h2 class="text-xl font-bold text-white">Британская аптечная</h2>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">фунт аптекарский</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" data-unit="apothecary_pound">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">унция аптекарская</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" data-unit="apothecary_ounce">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">драхма аптекарская</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" data-unit="apothecary_dram">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">скрупул</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" data-unit="scruple">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">гран аптекарский</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" data-unit="grain_apothecary">
+          </div>
+        </div>
+      </div>
+
+      <!-- Японские единицы -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-cyan-600 py-4 px-6">
+          <h2 class="text-xl font-bold text-white">Японские единицы</h2>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">кан (貫, 貫目)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent" data-unit="kan">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">кин (斤)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent" data-unit="kin">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">хиакумэ (百目)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent" data-unit="hyakume">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">моммэ (匁)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent" data-unit="momme">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">фун (分)</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent" data-unit="fun">
+          </div>
+        </div>
+      </div>
+
+      <!-- Старорусские меры -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="bg-gray-800 py-4 px-6">
+          <h2 class="text-xl font-bold text-white">Старорусские меры</h2>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">берковец</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" data-unit="berkovets">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">пуд</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" data-unit="pood">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">фунт</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" data-unit="funt">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">лот</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" data-unit="lot">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">золотник</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" data-unit="zolotnik">
+          </div>
+          <div class="space-y-2">
+            <label class="block text-gray-700 font-medium">доля</label>
+            <input type="number" class="mass-input w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" data-unit="dolya">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Инструкция -->
+    <div class="mt-10 bg-white rounded-2xl shadow-lg p-6 max-w-3xl mx-auto">
+      <h3 class="text-xl font-bold text-indigo-700 mb-4">Как пользоваться конвертером:</h3>
+      <ul class="space-y-2 text-gray-700">
+        <li class="flex items-start">
+          <span class="bg-indigo-100 text-indigo-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">1</span>
+          <span>Введите значение в любое поле - все остальные автоматически пересчитаются</span>
+        </li>
+        <li class="flex items-start">
+          <span class="bg-indigo-100 text-indigo-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">2</span>
+          <span>Единицы сгруппированы по историческим системам мер</span>
+        </li>
+        <li class="flex items-start">
+          <span class="bg-indigo-100 text-indigo-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">3</span>
+          <span>Для сброса всех значений - очистите любое поле</span>
+        </li>
+        <li class="flex items-start">
+          <span class="bg-indigo-100 text-indigo-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0">4</span>
+          <span>При фокусе на поле его содержимое выделяется для удобства редактирования</span>
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -209,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Коэффициенты перевода в граммы
     const factors = {
         // Метрические
-        'kiloton': 1000000000000,
+        'kiloton': 1000000000,
         'ton': 1000000,
         'kilonewton': 101971.621,
         'centner': 100000,
@@ -249,8 +360,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'long_hundredweight': 50802.34544,
         'short_hundredweight': 45359.237,
         'stone': 6350.29318,
-        'pound': 453.59237,
-        'ounce': 28.349523125,
+        'pound_avdp': 453.59237,
+        'ounce_avdp': 28.349523125,
         'dram': 1.7718451953125,
         'grain_avdp': 0.06479891,
         
@@ -272,9 +383,9 @@ document.addEventListener('DOMContentLoaded', function() {
         'berkovets': 163800,
         'pood': 16380,
         'funt': 409.5,
-        'lot': 12.796875,
-        'zolotnik': 4.265625,
-        'dolya': 0.04443359375
+        'lot': 12.797,
+        'zolotnik': 4.2656,
+        'dolya': 0.04443
     };
     
     const inputs = document.querySelectorAll('.mass-input');
@@ -319,17 +430,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<style>
-.mass-input {
-    margin-bottom: 10px;
-}
-.card {
-    margin-bottom: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-.card-header {
-    border-radius: 10px 10px 0 0 !important;
-}
-</style>
+<a href="{% url 'math_solver_base' %}" 
+   class="fixed top-12 left-12 text-black hover:text-gray-700 transition-colors">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+</a>
 {% endblock %}

@@ -1,0 +1,709 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="ru">
+{% block content %}
+<head>
+    <a href="{% url 'math_solver_base' %}" 
+   class="fixed top-12 left-12 text-black hover:text-gray-700 transition-colors">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+</a>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн калькуляторы по теории чисел</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#1e40af',
+                        accent: '#10b981',
+                        dark: '#1e293b',
+                        light: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .calculator-section {
+            transition: all 0.3s ease;
+        }
+        .operation-step {
+            font-family: monospace;
+            padding: 4px 8px;
+            background-color: #f1f5f9;
+            border-radius: 4px;
+            margin: 4px 0;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        .step-highlight {
+            background-color: #ffecb3;
+        }
+        .operation-container {
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Навигационная панель -->
+    <nav class="bg-secondary text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-calculator text-2xl mr-2"></i>
+                <h1 class="text-xl font-bold">Теория чисел</h1>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Заголовок страницы -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-dark mb-3">Калькуляторы по теории чисел</h1>
+            <p class="text-gray-600 max-w-3xl mx-auto">
+                Набор инструментов для выполнения различных операций с числами: сложение, вычитание, умножение, деление столбиком,
+                нахождение НОД и НОК, разложение на множители и вычисление квадратных корней.
+            </p>
+        </div>
+
+        <!-- Основной контент с калькуляторами -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Табы для калькуляторов -->
+            <div class="flex flex-wrap border-b">
+                <button class="tab-btn active px-6 py-4 font-medium text-gray-600 hover:text-primary transition border-b-2 border-primary text-primary" data-tab="addition">Сложение/вычитание</button>
+                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition" data-tab="multiplication">Умножение</button>
+                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition" data-tab="division">Деление</button>
+                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition" data-tab="gcd-lcm">НОД/НОК</button>
+                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition" data-tab="factorization">Разложение на множители</button>
+                <button class="tab-btn px-6 py-4 font-medium text-gray-600 hover:text-primary transition" data-tab="sqrt">Квадратный корень</button>
+            </div>
+
+            <!-- Контент калькуляторов -->
+            <div class="p-6">
+                <!-- Калькулятор сложения/вычитания -->
+                <div id="addition" class="calculator-section">
+                    <h2 class="text-2xl font-bold text-dark mb-4">Сложение и вычитание столбиком</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Первое число</label>
+                                <input type="number" id="addNum1" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="1234">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Второе число</label>
+                                <input type="number" id="addNum2" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="567">
+                            </div>
+                            <div class="flex space-x-4">
+                                <button id="addBtn" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition">Сложить</button>
+                                <button id="subtractBtn" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Вычесть</button>
+                                <button id="clearAdd" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-light p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Процесс вычисления:</h3>
+                                <div id="addResult" class="operation-container text-gray-800 font-mono">
+                                    <p class="text-gray-500 italic">Здесь будет отображен процесс вычисления</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Калькулятор умножения -->
+                <div id="multiplication" class="calculator-section hidden">
+                    <h2 class="text-2xl font-bold text-dark mb-4">Умножение столбиком</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Первое число</label>
+                                <input type="number" id="multNum1" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="123">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Второе число</label>
+                                <input type="number" id="multNum2" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="45">
+                            </div>
+                            <div class="flex space-x-4">
+                                <button id="multiplyBtn" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition">Умножить</button>
+                                <button id="clearMult" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-light p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Процесс вычисления:</h3>
+                                <div id="multResult" class="operation-container text-gray-800 font-mono">
+                                    <p class="text-gray-500 italic">Здесь будет отображен процесс умножения столбиком</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Калькулятор деления -->
+                <div id="division" class="calculator-section hidden">
+                    <h2 class="text-2xl font-bold text-dark mb-4">Деление столбиком (с остатком)</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Делимое</label>
+                                <input type="number" id="dividend" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="5535">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Делитель</label>
+                                <input type="number" id="divisor" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="45">
+                            </div>
+                            <div class="flex space-x-4">
+                                <button id="divideBtn" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition">Разделить</button>
+                                <button id="clearDiv" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-light p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Процесс вычисления:</h3>
+                                <div id="divResult" class="operation-container text-gray-800 font-mono">
+                                    <p class="text-gray-500 italic">Здесь будет отображен процесс деления столбиком</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Калькулятор НОД и НОК -->
+                <div id="gcd-lcm" class="calculator-section hidden">
+                    <h2 class="text-2xl font-bold text-dark mb-4">НОД и НОК двух чисел</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Первое число</label>
+                                <input type="number" id="gcdNum1" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="48">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Второе число</label>
+                                <input type="number" id="gcdNum2" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="18">
+                            </div>
+                            <div class="flex space-x-4">
+                                <button id="gcdBtn" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition">Найти НОД</button>
+                                <button id="lcmBtn" class="px-6 py-2 bg-accent text-white rounded-lg hover:bg-green-700 transition">Найти НОК</button>
+                                <button id="clearGcd" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-light p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Процесс вычисления:</h3>
+                                <div id="gcdResult" class="operation-container text-gray-800">
+                                    <p class="text-gray-500 italic">Здесь будет отображен процесс вычисления</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Разложение на множители -->
+                <div id="factorization" class="calculator-section hidden">
+                    <h2 class="text-2xl font-bold text-dark mb-4">Разложение числа на множители</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Число для разложения</label>
+                                <input type="number" id="factorNum" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="48">
+                            </div>
+                            <div class="flex space-x-4">
+                                <button id="factorBtn" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition">Разложить</button>
+                                <button id="clearFactor" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-light p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Результат:</h3>
+                                <div id="factorResult" class="operation-container text-gray-800">
+                                    <p class="text-gray-500 italic">Здесь будет отображено разложение на простые множители</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Квадратный корень -->
+                <div id="sqrt" class="calculator-section hidden">
+                    <h2 class="text-2xl font-bold text-dark mb-4">Калькулятор квадратных корней</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Число для извлечения корня</label>
+                                <input type="number" id="sqrtNum" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Введите число" value="144">
+                            </div>
+                            <div class="flex space-x-4">
+                                <button id="sqrtBtn" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition">Вычислить</button>
+                                <button id="clearSqrt" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Очистить</button>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-light p-4 rounded-lg">
+                                <h3 class="text-lg font-semibold mb-3">Результат:</h3>
+                                <div id="sqrtResult" class="operation-container text-gray-800">
+                                    <p class="text-gray-500 italic">Здесь будет отображен процесс извлечения корня</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Информационный раздел -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="text-primary text-3xl mb-4">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Теория чисел</h3>
+                <p class="text-gray-600">Теория чисел - раздел математики, изучающий свойства целых чисел и их взаимосвязи. Один из древнейших разделов математики.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="text-primary text-3xl mb-4">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">История вычислений</h3>
+                <p class="text-gray-600">Арифметические операции в столбик - традиционный метод выполнения вычислений, который использовался веками до появления калькуляторов.</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="text-primary text-3xl mb-4">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Почему это важно</h3>
+                <p class="text-gray-600">Понимание основных арифметических операций и свойств чисел является фундаментом для изучения более сложных математических концепций.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Переключение вкладок
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                // Убираем активный класс у всех кнопок
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active', 'text-primary', 'border-b-2', 'border-primary');
+                });
+                
+                // Добавляем активный класс к текущей кнопке
+                button.classList.add('active', 'text-primary', 'border-b-2', 'border-primary');
+                
+                // Скрываем все разделы калькуляторов
+                document.querySelectorAll('.calculator-section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                
+                // Показываем выбранный раздел
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.remove('hidden');
+            });
+        });
+
+        // Функции для калькуляторов
+        function clearResult(elementId) {
+            document.getElementById(elementId).innerHTML = '<p class="text-gray-500 italic">Здесь будет отображен результат вычисления</p>';
+        }
+
+        // Сложение столбиком
+        document.getElementById('addBtn').addEventListener('click', function() {
+            const num1 = parseInt(document.getElementById('addNum1').value) || 0;
+            const num2 = parseInt(document.getElementById('addNum2').value) || 0;
+            const result = num1 + num2;
+            
+            const num1Str = num1.toString();
+            const num2Str = num2.toString();
+            const maxLength = Math.max(num1Str.length, num2Str.length) + 1;
+            
+            const paddedNum1 = num1Str.padStart(maxLength, ' ');
+            const paddedNum2 = '+' + num2Str.padStart(maxLength - 1, ' ');
+            const line = '-'.repeat(maxLength);
+            const paddedResult = result.toString().padStart(maxLength, ' ');
+            
+            const steps = [
+                paddedNum1,
+                paddedNum2,
+                line,
+                paddedResult
+            ];
+            
+            const resultElement = document.getElementById('addResult');
+            resultElement.innerHTML = '';
+            
+            steps.forEach(step => {
+                const div = document.createElement('div');
+                div.className = 'operation-step';
+                div.textContent = step;
+                resultElement.appendChild(div);
+            });
+        });
+
+        // Вычитание столбиком
+        document.getElementById('subtractBtn').addEventListener('click', function() {
+            const num1 = parseInt(document.getElementById('addNum1').value) || 0;
+            const num2 = parseInt(document.getElementById('addNum2').value) || 0;
+            const result = num1 - num2;
+            
+            const num1Str = num1.toString();
+            const num2Str = num2.toString();
+            const maxLength = Math.max(num1Str.length, num2Str.length) + 1;
+            
+            const paddedNum1 = num1Str.padStart(maxLength, ' ');
+            const paddedNum2 = '-' + num2Str.padStart(maxLength - 1, ' ');
+            const line = '-'.repeat(maxLength);
+            const paddedResult = result.toString().padStart(maxLength, ' ');
+            
+            const steps = [
+                paddedNum1,
+                paddedNum2,
+                line,
+                paddedResult
+            ];
+            
+            const resultElement = document.getElementById('addResult');
+            resultElement.innerHTML = '';
+            
+            steps.forEach(step => {
+                const div = document.createElement('div');
+                div.className = 'operation-step';
+                div.textContent = step;
+                resultElement.appendChild(div);
+            });
+        });
+
+        // Умножение столбиком
+        document.getElementById('multiplyBtn').addEventListener('click', function() {
+            const num1 = parseInt(document.getElementById('multNum1').value) || 0;
+            const num2 = parseInt(document.getElementById('multNum2').value) || 0;
+            const result = num1 * num2;
+            
+            const num1Str = num1.toString();
+            const num2Str = num2.toString();
+            const maxLength = Math.max(num1Str.length, num2Str.length, result.toString().length) + 1;
+            
+            const steps = [];
+            steps.push(num1Str.padStart(maxLength, ' '));
+            steps.push('×' + num2Str.padStart(maxLength - 1, ' '));
+            steps.push('-'.repeat(maxLength));
+            
+            // Промежуточные вычисления
+            let intermediateResults = [];
+            let carry = 0;
+            let shift = 0;
+            
+            for (let i = num2Str.length - 1; i >= 0; i--) {
+                const digit = parseInt(num2Str[i]);
+                let line = '';
+                carry = 0;
+                
+                for (let j = num1Str.length - 1; j >= 0; j--) {
+                    const product = parseInt(num1Str[j]) * digit + carry;
+                    carry = Math.floor(product / 10);
+                    const remainder = product % 10;
+                    line = remainder.toString() + line;
+                }
+                
+                if (carry > 0) {
+                    line = carry.toString() + line;
+                }
+                
+                line = line + ' '.repeat(shift);
+                intermediateResults.push(line);
+                shift++;
+            }
+            
+            // Добавляем промежуточные результаты
+            intermediateResults.reverse().forEach((line, index) => {
+                if (intermediateResults.length > 1) {
+                    steps.push(line.padStart(maxLength + shift - 1, ' '));
+                }
+            });
+            
+            if (intermediateResults.length > 1) {
+                steps.push('-'.repeat(maxLength + shift - 1));
+            }
+            
+            steps.push(result.toString().padStart(maxLength + shift - 1, ' '));
+            
+            const resultElement = document.getElementById('multResult');
+            resultElement.innerHTML = '';
+            
+            steps.forEach(step => {
+                const div = document.createElement('div');
+                div.className = 'operation-step';
+                div.textContent = step;
+                resultElement.appendChild(div);
+            });
+        });
+
+        // Деление столбиком
+        document.getElementById('divideBtn').addEventListener('click', function() {
+            const dividend = parseInt(document.getElementById('dividend').value) || 0;
+            const divisor = parseInt(document.getElementById('divisor').value) || 1;
+            
+            if (divisor === 0) {
+                document.getElementById('divResult').innerHTML = '<div class="operation-step text-red-600">Ошибка: деление на ноль</div>';
+                return;
+            }
+            
+            const quotient = Math.floor(dividend / divisor);
+            const remainder = dividend % divisor;
+            
+            const steps = [];
+            
+            steps.push(`Делимое: ${dividend}`);
+            steps.push(`Делитель: ${divisor}`);
+            steps.push('---');
+            steps.push(`Результат: ${quotient}`);
+            steps.push(`Остаток: ${remainder}`);
+            
+            // Процесс деления в столбик
+            let current = dividend;
+            let result = '';
+            let stepResult = '';
+            
+            const dividendStr = dividend.toString();
+            const divisorStr = divisor.toString();
+            
+            let temp = '';
+            for (let i = 0; i < dividendStr.length; i++) {
+                temp += dividendStr[i];
+                let currentNum = parseInt(temp);
+                
+                if (currentNum >= divisor) {
+                    const q = Math.floor(currentNum / divisor);
+                    const product = q * divisor;
+                    const rem = currentNum % divisor;
+                    
+                    stepResult = `${currentNum} ÷ ${divisor} = ${q}`;
+                    stepResult += ` (${q} × ${divisor} = ${product})`;
+                    stepResult += `, остаток: ${rem}`;
+                    
+                    steps.push(stepResult);
+                    
+                    result += q.toString();
+                    temp = rem.toString();
+                } else if (i > 0) {
+                    result += '0';
+                }
+            }
+            
+            if (result === '') result = '0';
+            
+            const resultElement = document.getElementById('divResult');
+            resultElement.innerHTML = '';
+            
+            steps.forEach(step => {
+                const div = document.createElement('div');
+                div.className = 'operation-step';
+                div.textContent = step;
+                resultElement.appendChild(div);
+            });
+        });
+
+        // НОД (алгоритм Евклида)
+        document.getElementById('gcdBtn').addEventListener('click', function() {
+            let a = parseInt(document.getElementById('gcdNum1').value) || 0;
+            let b = parseInt(document.getElementById('gcdNum2').value) || 0;
+            
+            if (a === 0 && b === 0) {
+                document.getElementById('gcdResult').innerHTML = '<div class="operation-step">НОД(0, 0) не определен</div>';
+                return;
+            }
+            
+            a = Math.abs(a);
+            b = Math.abs(b);
+            
+            const steps = [];
+            steps.push(`Вычисляем НОД(${a}, ${b})`);
+            
+            while (b !== 0) {
+                const remainder = a % b;
+                steps.push(`${a} % ${b} = ${remainder}`);
+                a = b;
+                b = remainder;
+            }
+            
+            steps.push(`НОД = ${a}`);
+            
+            const resultElement = document.getElementById('gcdResult');
+            resultElement.innerHTML = '';
+            
+            steps.forEach(step => {
+                const div = document.createElement('div');
+                div.className = 'operation-step';
+                div.textContent = step;
+                resultElement.appendChild(div);
+            });
+        });
+
+        // НОК
+        document.getElementById('lcmBtn').addEventListener('click', function() {
+            let a = parseInt(document.getElementById('gcdNum1').value) || 0;
+            let b = parseInt(document.getElementById('gcdNum2').value) || 0;
+            
+            if (a === 0 || b === 0) {
+                document.getElementById('gcdResult').innerHTML = '<div class="operation-step">НОК(0, 0) = 0</div>';
+                return;
+            }
+            
+            a = Math.abs(a);
+            b = Math.abs(b);
+            
+            const steps = [];
+            steps.push(`Вычисляем НОК(${a}, ${b})`);
+            
+            // Вычисляем НОД для НОК
+            let gcdA = a;
+            let gcdB = b;
+            while (gcdB !== 0) {
+                const remainder = gcdA % gcdB;
+                gcdA = gcdB;
+                gcdB = remainder;
+            }
+            
+            const gcd = gcdA;
+            steps.push(`НОД(${a}, ${b}) = ${gcd}`);
+            
+            const lcm = (a * b) / gcd;
+            steps.push(`НОК(${a}, ${b}) = (${a} × ${b}) / ${gcd} = ${lcm}`);
+            
+            const resultElement = document.getElementById('gcdResult');
+            resultElement.innerHTML = '';
+            
+            steps.forEach(step => {
+                const div = document.createElement('div');
+                div.className = 'operation-step';
+                div.textContent = step;
+                resultElement.appendChild(div);
+            });
+        });
+
+        // Разложение на множители
+        document.getElementById('factorBtn').addEventListener('click', function() {
+            let n = parseInt(document.getElementById('factorNum').value) || 0;
+            
+            if (n <= 1) {
+                document.getElementById('factorResult').innerHTML = '<div class="operation-step">Число должно быть больше 1</div>';
+                return;
+            }
+            
+            const original = n;
+            const factors = [];
+            const steps = [];
+            steps.push(`Разложение числа ${n} на простые множители:`);
+            
+            // Обработка делителя 2
+            while (n % 2 === 0) {
+                factors.push(2);
+                steps.push(`${n} / 2 = ${n/2}`);
+                n = n / 2;
+            }
+            
+            // Обработка нечетных делителей
+            for (let i = 3; i <= Math.sqrt(n); i += 2) {
+                while (n % i === 0) {
+                    factors.push(i);
+                    steps.push(`${n} / ${i} = ${n/i}`);
+                    n = n / i;
+                }
+            }
+            
+            // Если осталось простое число больше 2
+            if (n > 2) {
+                factors.push(n);
+            }
+            
+            // Форматируем результат
+            let result = `${original} = `;
+            const factorGroups = {};
+            factors.forEach(factor => {
+                factorGroups[factor] = (factorGroups[factor] || 0) + 1;
+            });
+            
+            const formattedFactors = [];
+            for (const [factor, count] of Object.entries(factorGroups)) {
+                if (count === 1) {
+                    formattedFactors.push(factor);
+                } else {
+                    formattedFactors.push(`${factor}^${count}`);
+                }
+            }
+            
+            result += formattedFactors.join(' × ');
+            
+            steps.push('---');
+            steps.push(result);
+            
+            const resultElement = document.getElementById('factorResult');
+            resultElement.innerHTML = '';
+            
+            steps.forEach(step => {
+                const div = document.createElement('div');
+                div.className = 'operation-step';
+                div.textContent = step;
+                resultElement.appendChild(div);
+            });
+        });
+
+        // Квадратный корень
+        document.getElementById('sqrtBtn').addEventListener('click', function() {
+            const num = parseFloat(document.getElementById('sqrtNum').value) || 0;
+            
+            if (num < 0) {
+                document.getElementById('sqrtResult').innerHTML = '<div class="operation-step text-red-600">Ошибка: невозможно извлечь корень из отрицательного числа</div>';
+                return;
+            }
+            
+            const steps = [];
+            steps.push(`Извлечение квадратного корня из ${num}`);
+            
+            // Для целых чисел используем целочисленный метод
+            if (Number.isInteger(num)) {
+                let x = num;
+                let y = 1;
+                
+                while (x > y) {
+                    x = Math.floor((x + y) / 2);
+                    y = Math.floor(num / x);
+                    steps.push(`x = ${x}, y = ${y}`);
+                }
+                
+                const result = x;
+                steps.push(`√${num} = ${result} (целочисленный корень)`);
+            } else {
+                // Для дробных чисел используем Math.sqrt
+                const result = Math.sqrt(num);
+                steps.push(`√${num} = ${result.toFixed(6)}`);
+            }
+            
+            const resultElement = document.getElementById('sqrtResult');
+            resultElement.innerHTML = '';
+            
+            steps.forEach(step => {
+                const div = document.createElement('div');
+                div.className = 'operation-step';
+                div.textContent = step;
+                resultElement.appendChild(div);
+            });
+        });
+
+        // Очистка результатов
+        document.getElementById('clearAdd').addEventListener('click', () => clearResult('addResult'));
+        document.getElementById('clearMult').addEventListener('click', () => clearResult('multResult'));
+        document.getElementById('clearDiv').addEventListener('click', () => clearResult('divResult'));
+        document.getElementById('clearGcd').addEventListener('click', () => clearResult('gcdResult'));
+        document.getElementById('clearFactor').addEventListener('click', () => clearResult('factorResult'));
+        document.getElementById('clearSqrt').addEventListener('click', () => clearResult('sqrtResult'));
+    </script>
+</body>
+</html>
+{% endblock %}

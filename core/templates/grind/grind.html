@@ -64,10 +64,16 @@
                     </svg>
                     Быстрая кнопка
                 </h2>
-                <p class="mt-2 text-gray-200">Нажмите, чтобы получить <span id="pointsPerClick">5</span> баллов. Доступно <span id="clicksLeft">100</span> раз в день.</p>
+                <p class="mt-2 text-gray-200">
+                    Нажмите, чтобы получить <span id="pointsPerClick">5</span> баллов. 
+                    Доступно <span id="clicksLeft">100</span> раз в день.
+                    <span id="resetInfo"> (Сброс через 24 часа после первого клика)</span>
+                </p>
                 <button id="fastBtn" class="mt-4 px-6 py-3 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50 transition-all w-full">
                     Получить <span id="fastBtnPoints">5</span> баллов
                 </button>
+                <!-- Таймер сброса -->
+                <div id="resetTimer" class="mt-2 text-sm font-mono text-blue-400">Сброс через: --:--:--</div>
             </div>
         </div>
 
@@ -145,12 +151,14 @@
     const state = {
         points: 0,
         totalPoints: 0,
-        slowBtnLastClick: 0,
         fastBtnClicks: 0,
         maxFastClicks: 100,
         isUpgraded: false,
         timerInterval: null,
-        cooldownEndTime: 0 // Время окончания кулдауна
+        resetTimerInterval: null,
+        cooldownEndTimestamp: 0,
+        nextResetTimestamp: 0,
+        isFirstClickToday: true
     };
 
     const elements = {
@@ -159,6 +167,8 @@
         slowBtn: document.getElementById('slowBtn'),
         fastBtn: document.getElementById('fastBtn'),
         timer: document.getElementById('timer'),
+        resetTimer: document.getElementById('resetTimer'),
+        resetInfo: document.getElementById('resetInfo'),
         clicksLeft: document.getElementById('clicksLeft'),
         progressText: document.getElementById('progressText'),
         progressFill: document.getElementById('progressFill'),
@@ -189,31 +199,36 @@
             state.fastBtnClicks = data.fast_clicks_today;
             state.isUpgraded = data.is_upgraded;
             state.maxFastClicks = data.daily_limit;
+            state.nextResetTimestamp = data.next_reset_timestamp;
+            state.isFirstClickToday = state.fastBtnClicks === 0;
 
-            // Используем серверное время для точной синхронизации
-            if (data.last_slow_click_timestamp) {
-                state.slowBtnLastClick = data.last_slow_click_timestamp;
-                state.cooldownEndTime = state.slowBtnLastClick + CONFIG.SLOW_CLICK_COOLDOWN;
-                localStorage.setItem('cooldownEndTime', state.cooldownEndTime.toString());
-            } else if (data.cooldown_remaining > 0) {
-                // Если есть оставшееся время кулдауна
-                state.cooldownEndTime = Date.now() + (data.cooldown_remaining * 1000);
-                localStorage.setItem('cooldownEndTime', state.cooldownEndTime.toString());
+            if (data.cooldown_end_timestamp && data.cooldown_end_timestamp > 0) {
+                state.cooldownEndTimestamp = data.cooldown_end_timestamp;
+                localStorage.setItem('cooldownEndTimestamp', state.cooldownEndTimestamp.toString());
             } else {
-                // Пробуем восстановить из localStorage
-                const saved = localStorage.getItem('cooldownEndTime');
-                if (saved) state.cooldownEndTime = parseInt(saved);
+                const saved = localStorage.getItem('cooldownEndTimestamp');
+                if (saved) {
+                    const savedTimestamp = parseInt(saved);
+                    if (savedTimestamp > Date.now()) {
+                        state.cooldownEndTimestamp = savedTimestamp;
+                    } else {
+                        localStorage.removeItem('cooldownEndTimestamp');
+                        state.cooldownEndTimestamp = 0;
+                    }
+                } else {
+                    state.cooldownEndTimestamp = 0;
+                }
             }
 
             updateUI();
             startTimer();
+            startResetTimer();
         } catch (error) {
             showNotification(error.message, 'error');
         }
     }
 
     async function handleSlowClick() {
-        // Блокируем кнопку мгновенно
         elements.slowBtn.disabled = true;
         
         try {
@@ -230,14 +245,12 @@
             const data = await response.json();
             if (!data.success) throw new Error(data.message || 'Ошибка');
 
-            // Обновляем состояние после успешного запроса
             state.points = data.points;
             state.totalPoints = data.total_points;
             
-            if (data.last_slow_click_timestamp) {
-                state.slowBtnLastClick = data.last_slow_click_timestamp;
-                state.cooldownEndTime = state.slowBtnLastClick + (data.cooldown * 1000);
-                localStorage.setItem('cooldownEndTime', state.cooldownEndTime.toString());
+            if (data.cooldown_end_timestamp) {
+                state.cooldownEndTimestamp = data.cooldown_end_timestamp;
+                localStorage.setItem('cooldownEndTimestamp', data.cooldown_end_timestamp.toString());
             }
 
             updateUI();
@@ -245,6 +258,7 @@
             showNotification("Получен 1 балл!");
         } catch (error) {
             showNotification(error.message || 'Ошибка соединения', 'error');
+            elements.slowBtn.disabled = false;
         }
     }
 
@@ -267,7 +281,14 @@
             state.points = data.points;
             state.totalPoints = data.total_points;
             state.fastBtnClicks = data.fast_clicks_today;
-            updateUI();
+            
+            // Если это был первый клик, обновляем состояние для получения нового времени сброса
+            if (state.fastBtnClicks === 1) {
+                await loadState();
+            } else {
+                updateUI();
+            }
+            
             showNotification(`Получено ${data.amount} баллов!`);
         } catch (error) {
             showNotification(error.message || 'Ошибка соединения', 'error');
@@ -323,6 +344,19 @@
             elements.pointsPerClick.textContent = CONFIG.FAST_CLICK_BASE;
             elements.fastBtnPoints.textContent = CONFIG.FAST_CLICK_BASE;
         }
+
+        // Обновляем информацию о сбросе
+        if (state.fastBtnClicks > 0) {
+            elements.resetInfo.textContent = " (Сброс через 24 часа после первого клика)";
+        } else {
+            elements.resetInfo.textContent = " (Сброс в 00:00 следующего дня)";
+        }
+
+        if (fastClicksLeft <= 0) {
+            elements.resetTimer.className = "mt-2 text-sm font-mono text-red-400";
+        } else {
+            elements.resetTimer.className = "mt-2 text-sm font-mono text-blue-400";
+        }
     }
 
     function startTimer() {
@@ -330,19 +364,41 @@
         
         state.timerInterval = setInterval(() => {
             const now = Date.now();
-            const remaining = state.cooldownEndTime - now;
+            const remaining = state.cooldownEndTimestamp - now;
             
             if (remaining <= 0) {
                 elements.timer.textContent = "Доступно сейчас!";
                 elements.timer.className = "mt-2 text-sm font-mono text-green-400";
                 elements.slowBtn.disabled = false;
                 clearInterval(state.timerInterval);
+                localStorage.removeItem('cooldownEndTimestamp');
+                state.cooldownEndTimestamp = 0;
             } else {
                 const mins = Math.floor(remaining / 60000);
                 const secs = Math.floor((remaining % 60000) / 1000);
                 elements.timer.textContent = `Доступно через: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 elements.timer.className = "mt-2 text-sm font-mono text-yellow-400";
                 elements.slowBtn.disabled = true;
+            }
+        }, 1000);
+    }
+
+    function startResetTimer() {
+        clearInterval(state.resetTimerInterval);
+        
+        state.resetTimerInterval = setInterval(() => {
+            const now = Date.now();
+            const remaining = state.nextResetTimestamp - now;
+            
+            if (remaining <= 0) {
+                elements.resetTimer.textContent = "Лимит сброшен!";
+                setTimeout(loadState, 1000);
+            } else {
+                const hours = Math.floor(remaining / 3600000);
+                const mins = Math.floor((remaining % 3600000) / 60000);
+                const secs = Math.floor((remaining % 60000) / 1000);
+                
+                elements.resetTimer.textContent = `Сброс через: ${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
             }
         }, 1000);
     }
@@ -364,6 +420,11 @@
             ?.split('=')[1];
         return cookieValue ? decodeURIComponent(cookieValue) : null;
     }
+
+    window.addEventListener('beforeunload', () => {
+        clearInterval(state.timerInterval);
+        clearInterval(state.resetTimerInterval);
+    });
 </script>
 
 {% endblock %}
